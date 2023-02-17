@@ -29,7 +29,7 @@ public class Server extends ServerSocket {
 				while (isRunning) {
 					try {
 						Socket client = accept();
-						System.out.println("Connexion cliente re�ue.");
+						System.out.println("Connexion cliente reçue.");
 						Session wsSession = new Session(wsServer, client);
 						Thread t = new Thread(wsSession);
 						t.start();
@@ -58,29 +58,8 @@ public class Server extends ServerSocket {
 		try {
 			super.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public void sendToAll(String str) throws IOException {
-		Thread t = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				synchronized (wsSessions) {
-					for (Session wsSession : wsSessions) {
-						try {
-							wsSession.send(str);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		});
-		t.start();
-		
 	}
 
 }

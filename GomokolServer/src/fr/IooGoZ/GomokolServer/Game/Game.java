@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import fr.IooGoZ.GomokolServer.Server.Orders;
 import fr.IooGoZ.GomokolServer.Server.Session;
 
 public class Game implements Runnable {
@@ -19,11 +20,14 @@ public class Game implements Runnable {
 	private final int order;
 	private final Session owner;
 	private final GamesManager manager;
+	private final Thread thread;
 	
 	private int current_player_id = 0;
 	private boolean is_running = false;
 	private Player waiting_player = null;
 	private int[] last_stroke = null;
+	private int validation = -1;
+	
 	
 	
 	public Game(GamesManager manager, int id, int order, Session owner) {
@@ -31,6 +35,7 @@ public class Game implements Runnable {
 		this.id = id;
 		this.order = order;
 		this.manager = manager;
+		this.thread = new Thread(this);
 	}
 	
 	public int getId() {
@@ -61,13 +66,21 @@ public class Game implements Runnable {
 		}
 		return false;
 	}
+	
+	public boolean ownerValidation(Session session, int validation) {
+		if (this.owner.equals(session) && this.validation == -1 && validation >= 0 && validation < 3) {
+			this.validation = validation;
+			return true;
+		}
+		return false;
+	}
 
 	
-	public synchronized boolean start() {
-		if (!this.is_running && this.players.size() >= MINIMUM_PLAYER) {
+	public synchronized boolean start(Session session) {
+		if (this.owner.equals(session) && !this.is_running && this.players.size() >= MINIMUM_PLAYER) {
 			this.is_running = true;
-			Thread t = new Thread(this);
-			t.start();
+			this.thread.start();
+			return true;
 		}
 		return false;
 	}
@@ -77,30 +90,66 @@ public class Game implements Runnable {
 	public void run() {
 		while (this.is_running) {
 			for (Player player : players) {
-				this.last_stroke = null;
-				this.waiting_player = player;
 				try {
+					this.waiting_player = player;
+					
 					player.getSession().send(Orders.serverRequestStroke(this.id, player.getId()));
+					long time = System.currentTimeMillis();
+					while (this.last_stroke == null) {
+						if (System.currentTimeMillis() - time > TIMEOUT_DURATION) {
+							System.err.println("Player " + this.id + " " + player.getId() + " : time out !" );
+							this.manager.destroyGame(this);
+							return;
+						}
+					}
+					
+					this.owner.send(Orders.serverRequestValidation(this.id, player.getId(), this.last_stroke));
+					time = System.currentTimeMillis();
+					while (this.validation != -1) {
+						if (System.currentTimeMillis() - time > TIMEOUT_DURATION) {
+							System.err.println("Owner : time out !" );
+							this.manager.destroyGame(this);
+							return;
+						}
+					}
+					
+					switch (this.validation) {
+						//Case 0 : On continue 
+					
+						//Fin de partie
+						case 1 : 
+							this.is_running = false; break;
+						//Triche
+						case 2 : 
+							System.err.println("Player " + this.id + " " + player.getId() + " : cheat detected !" ); 
+							this.manager.destroyGame(this);
+							return;
+					}
+					
+					
+					this.sendToAll(Orders.serverSendStroke(this.id, player.getId(), this.last_stroke));
+					
+					if (!is_running) break;
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 					break;
 				}
-				long time = System.currentTimeMillis();
-				while (this.last_stroke == null) {
-					if (System.currentTimeMillis() - time > TIMEOUT_DURATION) {
-						System.err.println("Player " + this.id + " " + player.getId() + " : time out !" );
-						this.manager.destroyGame(this);
-						return;
-					}
-				}
-				
 			}
-			
 		}
-		
 		this.manager.destroyGame(this);
 	}
 	
+	private void sendToAll(int[] msg) throws IOException {
+		this.owner.send(msg);
+		for (Session sess : sessions)
+			sess.send(msg);
+	}
 	
+	public void destroy() {
+		players.clear();
+		sessions.clear();
+		strokes.clear();
+	}
 	
 }
