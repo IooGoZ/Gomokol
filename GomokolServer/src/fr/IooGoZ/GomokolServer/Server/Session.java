@@ -46,4 +46,13 @@ public class Session implements Runnable {
 	public Server getServer() {
 		return server;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Session) {
+			Session session = (Session) obj;
+			return session.client == this.client && session.parser == this.parser;
+		}
+		return false;
+	}
 }
