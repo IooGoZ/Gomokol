@@ -8,17 +8,37 @@ import java.net.UnknownHostException;
 import fr.IooGoZ.GomokolClient.DontUseOutsideAPI;
 import fr.IooGoZ.GomokolClient.GamesManager;
 
+
+/**
+ * @author IooGoZ - Tom BOIREAU
+ * Ne pas utiliser.
+ */
+@DontUseOutsideAPI
 public class Client extends Socket implements Runnable {
-	
+
+	/**
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public static final long TIMEOUT_DURATION = 3000l;
-	
+
+	/**
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public static final int DEFAULT_VALUE = -1;
 
 	private final BufferedOutputStream outSt;
 	private final Parser parser;
 
+	/**
+	 * @param address
+	 * @param port
+	 * @param manager
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public Client(String address, int port, GamesManager manager) throws UnknownHostException, IOException {
 		super(address, port);
@@ -26,6 +46,9 @@ public class Client extends Socket implements Runnable {
 		this.outSt = new BufferedOutputStream(super.getOutputStream());
 	}
 
+	/**
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	@Override
 	public void run() {
@@ -34,6 +57,11 @@ public class Client extends Socket implements Runnable {
 				break;
 	}
 
+	/**
+	 * @param msg
+	 * @throws IOException
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public void send(int[] msg) throws IOException {
 		for (int letter : msg)
