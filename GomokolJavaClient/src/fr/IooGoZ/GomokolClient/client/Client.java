@@ -5,20 +5,28 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import fr.IooGoZ.GomokolClient.DontUseOutsideAPI;
+import fr.IooGoZ.GomokolClient.GamesManager;
+
 public class Client extends Socket implements Runnable {
 	
-	private static final int PORT = 80;
-	private static final String HOST = "localhost";
+	@DontUseOutsideAPI
+	public static final long TIMEOUT_DURATION = 3000l;
+	
+	@DontUseOutsideAPI
+	public static final int DEFAULT_VALUE = -1;
 
 	private final BufferedOutputStream outSt;
 	private final Parser parser;
 
-	public Client() throws UnknownHostException, IOException {
-		super(HOST, PORT);
-		this.parser = new Parser(this, super.getInputStream());
+	@DontUseOutsideAPI
+	public Client(String address, int port, GamesManager manager) throws UnknownHostException, IOException {
+		super(address, port);
+		this.parser = new Parser(super.getInputStream(), manager);
 		this.outSt = new BufferedOutputStream(super.getOutputStream());
 	}
 
+	@DontUseOutsideAPI
 	@Override
 	public void run() {
 		while (super.isConnected())
@@ -26,16 +34,10 @@ public class Client extends Socket implements Runnable {
 				break;
 	}
 
+	@DontUseOutsideAPI
 	public void send(int[] msg) throws IOException {
 		for (int letter : msg)
 			outSt.write(letter);
 		outSt.flush();
 	}
-
-
-    public static void main(String[] args) throws UnknownHostException, IOException{
-        Client cl = new Client();
-		Thread t = new Thread(cl);
-		t.start();
-    }
 }

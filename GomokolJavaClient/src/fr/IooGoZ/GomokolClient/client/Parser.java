@@ -4,21 +4,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class Parser {
+import fr.IooGoZ.GomokolClient.DontUseOutsideAPI;
+import fr.IooGoZ.GomokolClient.GamesManager;
 
-	private final Client client;
+public class Parser {
 	private final InputStream in;
+	private final GamesManager manager;
 	
-	public Parser(Client client, InputStream in) {
-		this.client = client;
+	@DontUseOutsideAPI
+	public Parser(InputStream in, GamesManager manager) {
 		this.in = in;
+		this.manager = manager;
 	}
 	
+	@DontUseOutsideAPI
 	public boolean parse() {
 		try {
 			int order = readInt();
 			switch (order) {
-				
+				case 1 : return serverRequestStroke();
+				case 2 : return serverSendStroke();
+				case 3 : return serverRequestValidation();
+				case 4 : return serverGameCreated();
+				case 9 : return serverPlayerRegistered();
+				case 10 : return serverErrorRequest();
 				
 				default : return false;
 			}
@@ -27,6 +36,49 @@ public class Parser {
 		}
 		return false;
 	}
+	
+	private boolean serverRequestStroke() throws IOException {
+		int game_id = readInt();
+		int player_id = readInt();
+		return manager.serverRequestStroke(game_id, player_id);
+	}
+	
+	private boolean serverSendStroke() throws IOException {
+		int game_id = readInt();
+		int player_id = readInt();
+		int[] stroke = readIntArray();
+		
+		return manager.serverSendStroke(game_id, player_id, stroke);
+	}
+	
+	private boolean serverRequestValidation() throws IOException {
+		int game_id = readInt();
+		int player_id = readInt();
+		int[] stroke = readIntArray();
+		
+		return manager.serverRequestValidation(game_id, player_id, stroke);
+	}
+	
+	private boolean serverGameCreated() throws IOException {
+		int game_id = readInt();
+		manager.serverSetGameId(game_id);
+		return true;
+	}
+	
+	private boolean serverPlayerRegistered() throws IOException {
+		int game_id = readInt();
+		int player_id = readInt();
+		return manager.serverPlayerRegistered(game_id, player_id);
+	}
+	
+	private boolean serverErrorRequest() throws IOException {
+		int order = readInt();
+		System.err.println("Server Error : code=" + order);
+		return false;
+	}
+	
+
+	//Fonction ressource-----------------------------------------------------
 
 	private int readInt() throws IOException {
 		byte[] b = new byte[Integer.BYTES];

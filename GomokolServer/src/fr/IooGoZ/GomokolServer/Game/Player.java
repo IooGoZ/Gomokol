@@ -26,6 +26,7 @@ public class Player {
 		return this.session;
 	}
 	
+	//Verification de la validité d'un joueur (Sécurité réseau et Anticheat)
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Player) {

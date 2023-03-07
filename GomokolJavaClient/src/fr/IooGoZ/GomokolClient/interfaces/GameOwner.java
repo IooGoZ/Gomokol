@@ -1,5 +1,7 @@
 package fr.IooGoZ.GomokolClient.interfaces;
 
 public interface GameOwner {
-	public boolean getValidation(int id, int [] stroke);
+	
+	public Validation getValidation(int player_id, int [] stroke);
+	
 }

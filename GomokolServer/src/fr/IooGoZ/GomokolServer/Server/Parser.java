@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 
 import fr.IooGoZ.GomokolServer.Game.GamesManager;
 
+//Parser du serveur
 public class Parser {
 
 	private final Session session;
@@ -76,6 +77,8 @@ public class Parser {
 		return true;
 	}
 
+	
+	//Function ressource-----------------------------
 	private int readInt() throws IOException {
 		byte[] b = new byte[Integer.BYTES];
 		in.read(b);

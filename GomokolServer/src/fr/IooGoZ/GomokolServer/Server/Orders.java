@@ -1,5 +1,7 @@
 package fr.IooGoZ.GomokolServer.Server;
 
+
+//Générateur des messsages
 public enum Orders {
 	//ClientOrders (C2S)
 	C_INIT_GAME(0),
@@ -41,7 +43,7 @@ public enum Orders {
 		msg[2] = playerId;
 		msg[3] = stroke.length;
 		for (int i = 0; i < stroke.length; i++)
-			msg[3 + i] = stroke[i];
+			msg[4 + i] = stroke[i];
 		return msg;
 	}
 
@@ -52,7 +54,7 @@ public enum Orders {
 		msg[2] = playerId;
 		msg[3] = stroke.length;
 		for (int i = 0; i < stroke.length; i++)
-			msg[3 + i] = stroke[i];
+			msg[4 + i] = stroke[i];
 		return msg;
 	}
 	
