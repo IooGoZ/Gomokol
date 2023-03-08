@@ -46,9 +46,10 @@ public class GamesManager {
 	 * 
 	 */
 	public void connect(String adress, int port) throws UnknownHostException, IOException, Exception {
-		if (this.client == null)
+		if (this.client == null) {
 			this.client = new Client(adress, port, this);
-		else
+			Thread.sleep(1000l);
+		} else
 			throw new Exception("GameManager : Client is already connected.");
 	}
 
@@ -201,6 +202,9 @@ public class GamesManager {
 		if (game != null)
 			try {
 				game.serverSendStroke(player_id, stroke);
+				GameOwner owner = id2owner.getOrDefault(game_id, null);
+				if (owner != null)
+					owner.addStrokeToBoard(player_id, stroke);
 				return true;
 			} catch (Exception e) {
 				System.err.println(e.getMessage());

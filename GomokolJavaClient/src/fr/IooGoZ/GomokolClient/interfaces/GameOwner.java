@@ -20,5 +20,13 @@ public interface GameOwner {
 	 * 	- un joueur triche
 	 */
 	public Validation getValidation(int player_id, int[] stroke);
+	
+	/**
+	 * @param player_id Indentifant du joueur courant réalisant le coup
+	 * @param stroke Coup joué par le joueur
+	 * Ajoute un coup au plateau de jeu du propriétaire.
+	 * 
+	 */
+	public void addStrokeToBoard(int player_id, int[] stroke);
 
 }

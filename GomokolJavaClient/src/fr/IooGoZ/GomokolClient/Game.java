@@ -1,10 +1,13 @@
 package fr.IooGoZ.GomokolClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import fr.IooGoZ.GomokolClient.client.Client;
 import fr.IooGoZ.GomokolClient.client.Orders;
+import fr.IooGoZ.GomokolClient.interfaces.Board;
 import fr.IooGoZ.GomokolClient.interfaces.Player;
 
 
@@ -21,7 +24,8 @@ public class Game {
 	private final GamesManager manager;
 
 	private int player_id = Client.DEFAULT_VALUE;
-	private HashMap<int[], Player> board = new HashMap<>();
+	private final HashMap<int[], Player> board = new HashMap<>();
+	private final List<Board> boards = new ArrayList<>();
 
 	
 	/**
@@ -53,6 +57,13 @@ public class Game {
 	 */
 	public int getId() {
 		return this.id;
+	}
+	
+	/**
+	 * @param board Plateau de jeu à enregistrer
+	 */
+	public void registerNewBoard(Board board) {
+		boards.add(board);
 	}
 	
 	/**
@@ -125,6 +136,9 @@ public class Game {
 			board.put(stroke, player);
 			for (int plId : players.keySet()) {
 				players.get(plId).receiveNewStroke(player, stroke);
+			}
+			for (Board b : boards) {
+				b.addStrokeToBoard(player, stroke);
 			}
 			return;
 		}

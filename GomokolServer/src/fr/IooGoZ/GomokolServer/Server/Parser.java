@@ -1,8 +1,9 @@
 package fr.IooGoZ.GomokolServer.Server;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 import fr.IooGoZ.GomokolServer.Game.GamesManager;
 
@@ -10,16 +11,17 @@ import fr.IooGoZ.GomokolServer.Game.GamesManager;
 public class Parser {
 
 	private final Session session;
-	private final InputStream in;
+	private final DataInputStream in;
 	
-	public Parser(Session session, InputStream in) {
+	public Parser(Session session, InputStream inSt) {
 		this.session = session;
-		this.in = in;
+		this.in = new DataInputStream(new BufferedInputStream(inSt));
 	}
 	
-	public boolean parse() {
+	public synchronized boolean parse() {
 		try {
 			int order = readInt();
+			System.out.println("[Parser] - Ordre reçus : " + order);
 			switch (order) {
 				case 0 : return clientInitGame();
 				case 5 : return clientStartGame();
@@ -80,9 +82,7 @@ public class Parser {
 	
 	//Function ressource-----------------------------
 	private int readInt() throws IOException {
-		byte[] b = new byte[Integer.BYTES];
-		in.read(b);
-		return ByteBuffer.wrap(b).getInt();
+		return in.readInt();
 	}
 	
 	private int[] readIntArray() throws IOException {

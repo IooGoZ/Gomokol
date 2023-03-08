@@ -1,6 +1,7 @@
 package fr.IooGoZ.GomokolClient.client;
 
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -28,7 +29,7 @@ public class Client extends Socket implements Runnable {
 	@DontUseOutsideAPI
 	public static final int DEFAULT_VALUE = -1;
 
-	private final BufferedOutputStream outSt;
+	private final DataOutputStream outSt;
 	private final Parser parser;
 
 	/**
@@ -43,7 +44,8 @@ public class Client extends Socket implements Runnable {
 	public Client(String address, int port, GamesManager manager) throws UnknownHostException, IOException {
 		super(address, port);
 		this.parser = new Parser(super.getInputStream(), manager);
-		this.outSt = new BufferedOutputStream(super.getOutputStream());
+		this.outSt = new DataOutputStream(new BufferedOutputStream(super.getOutputStream()));
+		System.out.println("[Client] - Connecté au serveur : " + getInetAddress() + ":" + getPort());
 	}
 
 	/**
@@ -55,6 +57,7 @@ public class Client extends Socket implements Runnable {
 		while (super.isConnected())
 			if (!this.parser.parse())
 				break;
+		System.out.println("[Client] - Déconnecté du serveur.");
 	}
 
 	/**
@@ -63,9 +66,13 @@ public class Client extends Socket implements Runnable {
 	 * Ne pas utiliser.
 	 */
 	@DontUseOutsideAPI
-	public void send(int[] msg) throws IOException {
-		for (int letter : msg)
-			outSt.write(letter);
+	public synchronized void send(int[] msg) throws IOException {
+		StringBuilder build = new StringBuilder("[Client] - Message envoyé : ");
+		for (int letter : msg) {
+			outSt.writeInt(letter);
+			build.append(letter).append("; ");
+		}
 		outSt.flush();
+		System.out.println(build.toString());
 	}
 }

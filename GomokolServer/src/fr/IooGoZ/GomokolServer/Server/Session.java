@@ -1,6 +1,7 @@
 package fr.IooGoZ.GomokolServer.Server;
 
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -11,18 +12,20 @@ public class Session implements Runnable {
 	private Server server;
 	private Socket client;
 	private Parser parser;
-	private BufferedOutputStream outSt;
+	private DataOutputStream outSt;
 	
 
 	public Session(Server server, Socket client) {
+		
 		this.client = client;
 		this.server = server;
 		try {
 			this.parser = new Parser(this, client.getInputStream());
-			this.outSt = new BufferedOutputStream(client.getOutputStream());
+			this.outSt = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Connexion session : " + client.getInetAddress());
 	}
 
 	@Override
@@ -31,15 +34,25 @@ public class Session implements Runnable {
 			if (!this.parser.parse())
 				break;
 		
-		synchronized (server) {
-			server.removeSession(this);
+		System.out.println("Déconnexion session : " + client.getInetAddress());
+		try {
+			client.close();
+			synchronized (server) {
+				server.removeSession(this);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void send(int[] msg) throws IOException {
-		for (int letter : msg)
+	public synchronized void send(int[] msg) throws IOException {
+		StringBuilder build = new StringBuilder("[Session] Message envoyé : ");
+		for (int letter : msg) {
 			outSt.write(letter);
+			build.append(letter).append("; ");
+		}
 		outSt.flush();
+		System.out.println(build.toString());
 	}
 
 
