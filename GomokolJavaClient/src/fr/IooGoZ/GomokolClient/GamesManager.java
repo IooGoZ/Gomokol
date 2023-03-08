@@ -48,7 +48,8 @@ public class GamesManager {
 	public void connect(String adress, int port) throws UnknownHostException, IOException, Exception {
 		if (this.client == null) {
 			this.client = new Client(adress, port, this);
-			Thread.sleep(1000l);
+			Thread t = new Thread(client);
+			t.start();
 		} else
 			throw new Exception("GameManager : Client is already connected.");
 	}
@@ -84,7 +85,6 @@ public class GamesManager {
 
 		long time = System.currentTimeMillis();
 		while (this.game_id == Client.DEFAULT_VALUE)
-			;
 		if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
 			throw new Exception("initNewGame : Timeout server");
 
@@ -106,7 +106,7 @@ public class GamesManager {
 	 * 
 	 * Permet d'enregistrer manuellement une partie.
 	 */
-	public Game registerNewGame(int game_id, int order) throws Exception {
+	public synchronized Game registerNewGame(int game_id, int order) throws Exception {
 		if (id2game.getOrDefault(game_id, null) == null) {
 			Game game = new Game(this, game_id, order);
 			id2game.put(game_id, game);

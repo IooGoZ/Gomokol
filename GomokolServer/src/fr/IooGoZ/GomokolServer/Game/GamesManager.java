@@ -68,6 +68,7 @@ public class GamesManager {
 				session.send(Orders.serverPlayerRegistered(gameId, player_id));
 				return true;
 			} catch (Exception e) {
+				System.err.println(e.getMessage());
 				return false;
 			}
 			

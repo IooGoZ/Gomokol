@@ -48,7 +48,7 @@ public class Session implements Runnable {
 	public synchronized void send(int[] msg) throws IOException {
 		StringBuilder build = new StringBuilder("[Session] Message envoyé : ");
 		for (int letter : msg) {
-			outSt.write(letter);
+			outSt.writeInt(letter);
 			build.append(letter).append("; ");
 		}
 		outSt.flush();

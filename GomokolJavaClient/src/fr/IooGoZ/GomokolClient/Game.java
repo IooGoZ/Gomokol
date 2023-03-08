@@ -87,9 +87,8 @@ public class Game {
 		player_id = Client.DEFAULT_VALUE;
 		long time = System.currentTimeMillis();
 		while (this.player_id == Client.DEFAULT_VALUE)
-			;
-		if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
-			throw new Exception("initNewGame : Timeout server");
+			if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
+				throw new Exception("initNewGame : Timeout server");
 
 		players.put(this.player_id, player);
 
@@ -102,7 +101,7 @@ public class Game {
 	 * Ne pas utiliser.
 	 */
 	@DontUseOutsideAPI
-	public synchronized void serverSetPlayerId(int player_id) {
+	public void serverSetPlayerId(int player_id) {
 		this.player_id = player_id;
 	}
 

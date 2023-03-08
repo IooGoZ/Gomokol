@@ -89,8 +89,6 @@ public class Game implements Runnable {
 		if (this.waiting_player != null || stroke.length != this.order) {
 			if (this.waiting_player.getId() == player_id && this.waiting_player.isValidSession(session)) {
 				if (!this.strokes.contains(stroke)) {
-					this.strokes.add(stroke);
-					this.waiting_player = null;
 					this.last_stroke = stroke;
 					return true;
 				}
@@ -145,12 +143,13 @@ public class Game implements Runnable {
 						}
 					}
 					
+					this.validation = -1;
 					//Une fois le coup récupéré, on l'envoie pour la vérification
 					this.owner.send(Orders.serverRequestValidation(this.id, player.getId(), this.last_stroke));
 					time = System.currentTimeMillis();
 					
 					//On attend la réponse de l'owner, attention delay
-					while (this.validation != -1) {
+					while (this.validation == -1) {
 						if (System.currentTimeMillis() - time > TIMEOUT_DURATION) {
 							System.err.println("Owner : time out !" );
 							this.manager.destroyGame(this);
@@ -173,6 +172,9 @@ public class Game implements Runnable {
 							return;
 					}
 					
+					this.waiting_player = null;
+					this.validation = -1;
+					
 					//On envoie le résultat de la partie
 					this.sendToAll(Orders.serverSendStroke(this.id, player.getId(), this.last_stroke));
 					
@@ -180,7 +182,7 @@ public class Game implements Runnable {
 					if (!is_running) break;
 					
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.err.println(e.getMessage());
 					break;
 				}
 			}

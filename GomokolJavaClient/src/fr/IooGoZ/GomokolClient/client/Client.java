@@ -57,7 +57,13 @@ public class Client extends Socket implements Runnable {
 		while (super.isConnected())
 			if (!this.parser.parse())
 				break;
-		System.out.println("[Client] - Déconnecté du serveur.");
+		try {
+			close();
+			System.out.println("[Client] - Déconnecté du serveur.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**

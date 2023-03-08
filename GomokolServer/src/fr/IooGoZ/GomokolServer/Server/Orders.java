@@ -69,7 +69,7 @@ public enum Orders {
 	}
 	
 	public static int[] serverErrorInRequest(int cmd) {
-		int[] msg = {S_PLAYER_REGISTERED.getId(), cmd};
+		int[] msg = {S_ERROR_REQUEST.getId(), cmd};
 		return msg;
 	}
 
