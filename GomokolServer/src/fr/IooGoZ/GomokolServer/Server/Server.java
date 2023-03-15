@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Server extends ServerSocket {
 
-	private static final int PORT = 80;
+	private static final int PORT = 8080;
 	private boolean isRunning = true;
 	private List<Session> wsSessions = new ArrayList<>();
 	
