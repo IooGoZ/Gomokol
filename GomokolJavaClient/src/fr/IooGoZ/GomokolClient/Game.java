@@ -24,7 +24,7 @@ public class Game {
 	private final GamesManager manager;
 
 	private int player_id = Client.DEFAULT_VALUE;
-	private final HashMap<int[], Player> board = new HashMap<>();
+	private final HashMap<int[], Integer> board = new HashMap<>();
 	private final List<Board> boards = new ArrayList<>();
 
 	
@@ -71,7 +71,7 @@ public class Game {
 	 * @return null si la position n'existe pas.
 	 * Permet de récuperer une position du plateau.
 	 */
-	public Player getPlayerAtPosition(int[] pos) {
+	public int getPlayerAtPosition(int[] pos) {
 		return board.getOrDefault(pos, null);
 	}
 	
@@ -90,6 +90,7 @@ public class Game {
 			if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
 				throw new Exception("initNewGame : Timeout server");
 
+		player.setId(id);
 		players.put(this.player_id, player);
 
 		player_id = Client.DEFAULT_VALUE;
@@ -130,18 +131,14 @@ public class Game {
 	 */
 	@DontUseOutsideAPI
 	public void serverSendStroke(int player_id, int[] stroke) throws Exception {
-		Player player = players.getOrDefault(player_id, null);
-		if (player != null) {
-			board.put(stroke, player);
-			for (int plId : players.keySet()) {
-				players.get(plId).receiveNewStroke(player, stroke);
-			}
-			for (Board b : boards) {
-				b.addStrokeToBoard(player, stroke);
-			}
-			return;
+		board.put(stroke, player_id);
+		for (int plId : players.keySet()) {
+			players.get(plId).receiveNewStroke(player_id, stroke);
 		}
-		throw new Exception("serverRequestPlayerStroke : server request bad player.");
+		for (Board b : boards) {
+			b.addStrokeToBoard(player_id, stroke);
+		}
+		return;
 	}
 
 }

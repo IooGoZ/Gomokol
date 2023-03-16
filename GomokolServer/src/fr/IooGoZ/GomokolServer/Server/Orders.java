@@ -1,6 +1,5 @@
 package fr.IooGoZ.GomokolServer.Server;
 
-
 //Générateur des messsages
 public enum Orders {
 	//ClientOrders (C2S)
@@ -32,11 +31,19 @@ public enum Orders {
 	//----------------------------------------------------------------------------------------------
 	
 	public static int[] serverRequestStroke(int gameId, int playerId) {
+		System.out.println("[Orders] - Request Stroke (1) : game_id=" + gameId + ", player_id=" + playerId);
 		int[] msg = {S_REQUEST_STROKE.getId(), gameId, playerId};
 		return msg;
 	}
 	
 	public static int[] serverSendStroke(int gameId, int playerId, int[] stroke) {
+		
+		System.out.print("[Orders] - Send Stroke (2) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
+		for (int i : stroke) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
+		
 		int[] msg = new int[4+stroke.length];
 		msg[0] = S_SEND_STROKE.getId();
 		msg[1] = gameId;
@@ -48,6 +55,13 @@ public enum Orders {
 	}
 
 	public static int[] serverRequestValidation(int gameId, int playerId, int[] stroke) {
+		
+		System.out.print("[Orders] - Request Validation (3) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
+		for (int i : stroke) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
+		
 		int[] msg = new int[4+stroke.length];
 		msg[0] = S_REQUEST_VALIDATION.getId();
 		msg[1] = gameId;
@@ -59,16 +73,24 @@ public enum Orders {
 	}
 	
 	public static int[] serverGameCreated(int gameId) {
+		System.out.println("[Orders] - Game Created (4) : game_id=" + gameId);
+		
 		int[] msg = {S_GAME_CREATED.getId(), gameId};
 		return msg;
 	}
 	
 	public static int[] serverPlayerRegistered(int gameId, int playerId) {
+		
+		System.out.println("[Orders] - Player Registered (9) : game_id=" + gameId + ", player_id=" + playerId);
+		
 		int[] msg = {S_PLAYER_REGISTERED.getId(), gameId, playerId};
 		return msg;
 	}
 	
 	public static int[] serverErrorInRequest(int cmd) {
+		
+		System.err.println("[Orders] - Error In Request (10) : command=" + cmd);
+		
 		int[] msg = {S_ERROR_REQUEST.getId(), cmd};
 		return msg;
 	}

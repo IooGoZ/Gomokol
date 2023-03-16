@@ -52,7 +52,7 @@ public class Game implements Runnable {
 	private int[] last_stroke = null;
 	
 	//Validation du coup joué
-	private int validation = -1;
+	private Integer validation = -1;
 	
 	
 	//Appelé par le Manager, ne pas faire d'appel en dehors de la partie
@@ -129,6 +129,11 @@ public class Game implements Runnable {
 				try {
 					this.waiting_player = player;
 					
+					//On reset les variables.
+					this.last_stroke = null;
+					this.validation = -1;
+					
+					
 					//On envoie la requete au joueurs concernés
 					player.getSession().send(Orders.serverRequestStroke(this.id, player.getId()));
 					
@@ -141,9 +146,9 @@ public class Game implements Runnable {
 							this.manager.destroyGame(this);
 							return;
 						}
+						Thread.yield();
 					}
 					
-					this.validation = -1;
 					//Une fois le coup récupéré, on l'envoie pour la vérification
 					this.owner.send(Orders.serverRequestValidation(this.id, player.getId(), this.last_stroke));
 					time = System.currentTimeMillis();
@@ -155,6 +160,7 @@ public class Game implements Runnable {
 							this.manager.destroyGame(this);
 							return;
 						}
+						Thread.yield();
 					}
 					
 					//En fonction de la validation
@@ -163,6 +169,7 @@ public class Game implements Runnable {
 					
 						//Fin de partie
 						case 1 : 
+							System.out.println("Player " + this.id + " " + player.getId() + " : won the game !" );
 							this.is_running = false; break;
 
 						//Triche

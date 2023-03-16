@@ -7,11 +7,11 @@ package fr.IooGoZ.GomokolClient.interfaces;
 public interface Board {
 	
 	/**
-	 * @param player Joueur courant réalisant le coup
+	 * @param player_id Joueur courant réalisant le coup
 	 * @param stroke Coup joué par le joueur
 	 * Ajoute un coup au plateau de jeu
 	 * 
 	 */
-	public void addStrokeToBoard(Player player, int[] stroke);
+	public void addStrokeToBoard(int player_id, int[] stroke);
 	
 }

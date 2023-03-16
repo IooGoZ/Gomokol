@@ -9,6 +9,8 @@ package fr.IooGoZ.GomokolClient.interfaces;
  */
 public interface Player {
 
+	public void setId(int id);
+	public int getId();
 	/**
 	 * @return Le coup joué par le joueur.
 	 * Est appelé pour demander au joueur le coup qu'il souhaite joué.
@@ -21,6 +23,6 @@ public interface Player {
 	 * 
 	 * Permet d'enregistrer un coup joué par un autre joueur. 
 	 */
-	public void receiveNewStroke(Player player, int[] stroke);
+	public void receiveNewStroke(int player_id, int[] stroke);
 
 }
