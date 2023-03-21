@@ -8,6 +8,7 @@ import java.util.List;
 import fr.IooGoZ.GomokolClient.client.Client;
 import fr.IooGoZ.GomokolClient.client.Orders;
 import fr.IooGoZ.GomokolClient.interfaces.Board;
+import fr.IooGoZ.GomokolClient.interfaces.FreeDataReceiver;
 import fr.IooGoZ.GomokolClient.interfaces.Player;
 
 
@@ -26,7 +27,7 @@ public class Game {
 	private int player_id = Client.DEFAULT_VALUE;
 	private final HashMap<int[], Integer> board = new HashMap<>();
 	private final List<Board> boards = new ArrayList<>();
-
+	private final List<FreeDataReceiver> freeDatas = new ArrayList<>();
 	
 	/**
 	 * @param manager
@@ -66,6 +67,10 @@ public class Game {
 		boards.add(board);
 	}
 	
+	public void registerFreeDataReceiver(FreeDataReceiver fdr) {
+		freeDatas.add(fdr);
+	}
+	
 	/**
 	 * @param pos Position souhaitée
 	 * @return null si la position n'existe pas.
@@ -86,9 +91,11 @@ public class Game {
 
 		player_id = Client.DEFAULT_VALUE;
 		long time = System.currentTimeMillis();
-		while (this.player_id == Client.DEFAULT_VALUE)
+		while (this.player_id == Client.DEFAULT_VALUE) {
 			if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
 				throw new Exception("initNewGame : Timeout server");
+			Thread.yield();
+		}
 
 		player.setId(id);
 		players.put(this.player_id, player);
@@ -139,6 +146,22 @@ public class Game {
 			b.addStrokeToBoard(player_id, stroke);
 		}
 		return;
+	}
+	
+	@DontUseOutsideAPI
+	public void serverEndGame(int player_id) {
+		if (player_id == -1) {
+			System.out.println("La partie " + id + " s'est terminé sans gagnant.");
+		} else {
+			System.out.println("Le joueur " + player_id + " a gagné.");
+		}
+	}
+
+
+	public boolean serverFreeData(int[] data) {
+		for (FreeDataReceiver fdr : freeDatas)
+			fdr.receiveFreeData(data);
+		return true;
 	}
 
 }

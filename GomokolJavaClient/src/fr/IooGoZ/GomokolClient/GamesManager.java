@@ -7,6 +7,7 @@ import java.util.HashMap;
 import fr.IooGoZ.GomokolClient.client.Client;
 import fr.IooGoZ.GomokolClient.client.Orders;
 import fr.IooGoZ.GomokolClient.interfaces.GameOwner;
+import fr.IooGoZ.GomokolClient.interfaces.Group;
 import fr.IooGoZ.GomokolClient.interfaces.Validation;
 
 /**
@@ -27,11 +28,16 @@ public class GamesManager {
 
 	private HashMap<Integer, Game> id2game;
 	private HashMap<Integer, GameOwner> id2owner;
+	private HashMap<Integer, Group> id2group;
+	
+	private int group_id;
 
 	private GamesManager() {
 		game_id = Client.DEFAULT_VALUE;
+		group_id = Client.DEFAULT_VALUE;
 		id2game = new HashMap<>();
 		id2owner = new HashMap<>();
+		id2group = new HashMap<>();
 	}
 
 	/**
@@ -66,8 +72,31 @@ public class GamesManager {
 			return this.client;
 		throw new Exception(function + " : Client is not connected.");
 	}
+	
 
-	// Call Outside API
+	public int initGroup(Group group, int nb_player_per_game, int nb_games) throws IOException, Exception {
+		group_id = Client.DEFAULT_VALUE;
+		
+		this.getClient("initGroup").send(Orders.clientInitGroup(nb_player_per_game, nb_games));
+		
+		long time = System.currentTimeMillis();
+		while (this.group_id == Client.DEFAULT_VALUE) {
+		if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
+			throw new Exception("initNewGame : Timeout server");
+			Thread.yield();
+		}
+		
+		id2group.put(group_id, group);
+		int tmp_id = group_id;
+		
+		group_id = Client.DEFAULT_VALUE;
+		
+		return tmp_id;
+	}
+	
+	public void linkOwnerWithGame(GameOwner owner, Game game) {
+		id2owner.put(game.getId(), owner);
+	}
 
 	// GameOwner--------------------------------------------------------
 	/**
@@ -78,15 +107,17 @@ public class GamesManager {
 	 * 
 	 * Demande la création d'une nouvelle partie au serveur.
 	 */
-	public synchronized Game initNewGame(GameOwner owner, int order) throws Exception {
-		this.getClient("initNewGame").send(Orders.clientInitGame(order));
+	public synchronized Game initNewGame(GameOwner owner, int group, int order) throws Exception {
+		this.getClient("initNewGame").send(Orders.clientInitGame(group, order));
 
 		this.game_id = Client.DEFAULT_VALUE;
 
 		long time = System.currentTimeMillis();
-		while (this.game_id == Client.DEFAULT_VALUE)
+		while (this.game_id == Client.DEFAULT_VALUE) {
 		if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
 			throw new Exception("initNewGame : Timeout server");
+			Thread.yield();
+		}
 
 		Game game = new Game(this, this.game_id, order);
 
@@ -219,5 +250,41 @@ public class GamesManager {
 	@DontUseOutsideAPI
 	public void serverSetGameId(int game_id) {
 		this.game_id = game_id;
+	}
+	
+	@DontUseOutsideAPI
+	public void serverSetGroupId(int group_id) {
+		this.group_id = group_id;
+	}
+	
+	@DontUseOutsideAPI
+	public boolean serverEndGame(int game_id, int player_id) {
+		Game game = id2game.getOrDefault(game_id, null);
+		if (game != null)
+			try {
+				game.serverEndGame(player_id);
+				return true;
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		return false;
+	}
+	
+	@DontUseOutsideAPI
+	public boolean serverNewGroupGame(int group_id, int game_id) {
+		Group group = id2group.getOrDefault(group_id, null);
+		if (group != null) {
+			group.autoGameSubscriber(game_id);
+			return true;
+		}
+		return false;
+	}
+	
+	@DontUseOutsideAPI
+	public boolean serverFreeData(int game_id, int[] data) {
+		Game game = id2game.getOrDefault(game_id, null);
+		if (game != null)
+			return game.serverFreeData(data);
+		return false;
 	}
 }

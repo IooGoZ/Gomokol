@@ -7,7 +7,7 @@
 #include "game.h"
 #include "client.h"
 
-void connect(char * ip, int port);
+void gamemanager_connect(const char addr[], int port);
 
 t_server get_server();
 
@@ -18,5 +18,7 @@ bool server_player_register(int game_id, int player_id);
 bool server_request_stroke(int game_id, int player_id);
 
 bool server_send_stroke(int game_id, int player_id, int* position);
+
+void wait_end_of_server(void);
 
 #endif

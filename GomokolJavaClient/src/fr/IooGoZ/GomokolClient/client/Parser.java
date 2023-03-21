@@ -36,7 +36,6 @@ public class Parser {
 	public synchronized boolean parse() {
 		try {
 			int order = readInt();
-			System.out.println("[Parser] - Ordre  reçus : " + order);
 			switch (order) {
 			case 1:
 				return serverRequestStroke();
@@ -50,6 +49,15 @@ public class Parser {
 				return serverPlayerRegistered();
 			case 10:
 				return serverErrorRequest();
+			case 11:
+				return serverEndGame();
+			case 13:
+				return serverNewGame();
+			case 15:
+				return serverGroupRegistered();
+			case 17:
+				return serverFreeData();
+			
 
 			default:
 				return false;
@@ -63,6 +71,8 @@ public class Parser {
 	private boolean serverRequestStroke() throws IOException {
 		int game_id = readInt();
 		int player_id = readInt();
+		
+		System.out.println("[Parser] - Request Stroke (1) : game_id=" + game_id + ", player_id=" + player_id);
 		return manager.serverRequestStroke(game_id, player_id);
 	}
 
@@ -71,6 +81,12 @@ public class Parser {
 		int player_id = readInt();
 		int[] stroke = readIntArray();
 
+		System.out.print("[Parser] - Send Stroke (2) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
+		for (int i : stroke) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
+		
 		return manager.serverSendStroke(game_id, player_id, stroke);
 	}
 
@@ -78,12 +94,19 @@ public class Parser {
 		int game_id = readInt();
 		int player_id = readInt();
 		int[] stroke = readIntArray();
-
+		
+		System.out.print("[Parser] - Request Validation (3) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
+		for (int i : stroke) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
 		return manager.serverRequestValidation(game_id, player_id, stroke);
 	}
 
 	private boolean serverGameCreated() throws IOException {
 		int game_id = readInt();
+		
+		System.out.println("[Parser] - Game Created (4) : game_id=" + game_id);
 		manager.serverSetGameId(game_id);
 		return true;
 	}
@@ -91,13 +114,44 @@ public class Parser {
 	private boolean serverPlayerRegistered() throws IOException {
 		int game_id = readInt();
 		int player_id = readInt();
+		
+		System.out.println("[Parser] - Player Registered (9) : game_id=" + game_id + ", player_id=" + player_id);
 		return manager.serverPlayerRegistered(game_id, player_id);
 	}
 
 	private boolean serverErrorRequest() throws IOException {
 		int order = readInt();
-		System.err.println("Server Error : code=" + order);
+
+		System.err.println("[Parser] - Server Error : command=" + order);
 		return false;
+	}
+	
+	private boolean serverEndGame() throws IOException {
+		int game_id = readInt();
+		int player_id = readInt();
+		
+		return manager.serverEndGame(game_id, player_id);
+	}
+	
+	private boolean serverNewGame() throws IOException {
+		int group_id = readInt();
+		int game_id = readInt();
+		
+		return manager.serverNewGroupGame(group_id, game_id);
+	}
+	
+	private boolean serverGroupRegistered() throws IOException {
+		int group_id = readInt();
+		manager.serverSetGroupId(group_id);
+		return true;
+	}
+	
+	private boolean serverFreeData() throws IOException {
+		int game_id = readInt();
+		int[] data = readIntArray();
+		
+		
+		return manager.serverFreeData(game_id, data);
 	}
 
 	// Fonction ressource-----------------------------------------------------

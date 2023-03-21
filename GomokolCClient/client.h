@@ -10,10 +10,11 @@
 typedef struct s_server {
     int socketfd;
     bool is_connected;
-
+    char * addr;
+    int port;
 } * t_server;
 
-t_server server_connect(char * addr, int port);
+t_server server_connect(const char addr[], int port);
 
 void close_server(t_server serv);
 

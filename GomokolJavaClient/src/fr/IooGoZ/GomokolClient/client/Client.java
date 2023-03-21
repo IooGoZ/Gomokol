@@ -73,12 +73,9 @@ public class Client extends Socket implements Runnable {
 	 */
 	@DontUseOutsideAPI
 	public synchronized void send(int[] msg) throws IOException {
-		StringBuilder build = new StringBuilder("[Client] - Message envoyé : ");
 		for (int letter : msg) {
 			outSt.writeInt(letter);
-			build.append(letter).append("; ");
 		}
 		outSt.flush();
-		System.out.println(build.toString());
 	}
 }

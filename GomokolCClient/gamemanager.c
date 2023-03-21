@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
 
@@ -22,8 +23,8 @@ int game_id = DEFAULT_VALUE;
 
 
 //Function with extern usage
-void connect(char * ip, int port) {
-    server = server_connect(ip, port);
+void gamemanager_connect(const char addr[], int port) {
+    server = server_connect(addr, port);
 }
 
 t_server get_server() {
@@ -37,6 +38,10 @@ t_game register_new_game(int game_id, int order) {
     game_count++;
 
     return game;
+}
+
+void wait_end_of_server() {
+    while(server->is_connected);
 }
 
 //Function 

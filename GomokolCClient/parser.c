@@ -72,6 +72,9 @@ bool parser_server_error_request(t_server serv) {
 }
 
 bool parse(t_server serv, int order) {
+
+    printf("Parsing order %d.\n", order);
+
     switch (order) {
         case S_REQUEST_STROKE:
             return parser_server_request_stroke(serv);

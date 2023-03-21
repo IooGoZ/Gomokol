@@ -30,10 +30,13 @@ public class Session implements Runnable {
 
 	@Override
 	public void run() {
-		while (!client.isClosed())
+		
+		while (!client.isClosed()) {
 			if (!this.parser.parse())
 				break;
-		
+			
+		}
+			
 		System.out.println("Déconnexion session : " + client.getInetAddress());
 		try {
 			client.close();

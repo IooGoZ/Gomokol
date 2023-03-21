@@ -31,6 +31,7 @@ public class Game implements Runnable {
 	//Ordre de la partie
 	private final int order;
 	
+	
 	//Propriétaire de la partie
 	private final Session owner;
 	
@@ -54,14 +55,20 @@ public class Game implements Runnable {
 	//Validation du coup joué
 	private Integer validation = -1;
 	
+	private final Group group;
+	
 	
 	//Appelé par le Manager, ne pas faire d'appel en dehors de la partie
-	public Game(GamesManager manager, int id, int order, Session owner) {
+	public Game(GamesManager manager, Group group, int id, int order, Session owner) {
 		this.owner = owner;
+		this.group = group;
 		this.id = id;
 		this.order = order;
 		this.manager = manager;
 		this.thread = new Thread(this);
+		System.err.println(this.group);
+		if (group != null)
+			group.registerGame(this);
 	}
 	
 	//Retourne l'id de la partie courante
@@ -75,10 +82,23 @@ public class Game implements Runnable {
 	//Demande l'ajout d'un joueur
 	public synchronized int addPlayer(Session session) throws Exception {
 		if (!is_running) {
-			if (!this.owner.equals(session) && !sessions.contains(session))
-				sessions.add(session);
-			this.current_player_id++;
-			players.add(new Player(this, this.current_player_id, session));
+			if (group != null) {
+				if (group.isValidSession(session)) {
+					
+					if (!this.owner.equals(session) && !sessions.contains(session))
+						sessions.add(session);
+					this.current_player_id++;
+					players.add(new Player(this, this.current_player_id, session));
+					if (group.isReady() && group.getNbPlayers() == players.size())
+						start(owner);
+				} else throw new Exception("Game->addPlayer : session is not registered to group.");
+			} else {
+				if (!this.owner.equals(session) && !sessions.contains(session))
+					sessions.add(session);
+				this.current_player_id++;
+				players.add(new Player(this, this.current_player_id, session));
+			}
+			
 			return this.current_player_id;
 		}
 		throw new Exception("Game->addPlayer : game is already runned.");
@@ -115,6 +135,18 @@ public class Game implements Runnable {
 			return true;
 		}
 		return false;
+	}
+	
+	public List<Session> getSessions() {
+		return sessions;
+	}
+	
+	public int getNbPlayers() {
+		return players.size();
+	}
+	
+	public Session getOwner() {
+		return owner;
 	}
 
 	//Fonction run du Runnable, ne pas utiliser en dehors
@@ -170,11 +202,19 @@ public class Game implements Runnable {
 						//Fin de partie
 						case 1 : 
 							System.out.println("Player " + this.id + " " + player.getId() + " : won the game !" );
+							
+							this.sendToAll(Orders.serverEndGame(id, player.getId()));
+							
+							if (group!=null) group.addWinner(player.getSession());
+							
 							this.is_running = false; break;
 
 						//Triche
 						case 2 : 
 							System.err.println("Player " + this.id + " " + player.getId() + " : cheat detected !" ); 
+							
+							this.sendToAll(Orders.serverEndGame(id, -1));
+							
 							this.manager.destroyGame(this);
 							return;
 					}
@@ -184,7 +224,7 @@ public class Game implements Runnable {
 					
 					//On envoie le résultat de la partie
 					this.sendToAll(Orders.serverSendStroke(this.id, player.getId(), this.last_stroke));
-					
+				
 					//Vérification de la fin de partie
 					if (!is_running) break;
 					
@@ -210,5 +250,14 @@ public class Game implements Runnable {
 		sessions.clear();
 		strokes.clear();
 	}
+
+	public Group getGroup() {
+		return group;
+	}
+	
+	public int getOrder() {
+		return order;
+	}
+
 	
 }

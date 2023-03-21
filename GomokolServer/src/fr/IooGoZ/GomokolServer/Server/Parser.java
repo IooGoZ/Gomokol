@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 
 import fr.IooGoZ.GomokolServer.Game.GamesManager;
 
@@ -19,21 +20,31 @@ public class Parser {
 	}
 	
 	public synchronized boolean parse() {
-		try {
-			int order = readInt();
-			switch (order) {
+			try {
+				int order = readInt();
+				switch (order) {
 				case 0 : return clientInitGame();
 				case 5 : return clientStartGame();
 				case 6 : return clientEmitStroke();
 				case 7 : return clientAnswerValidation();
 				case 8 : return clientRegisterPlayer();
+				case 12 : return clientSubscribeGroup();
+				case 14 : return clientInitGroup();
+				case 17 : return clientFreeData();
 				
-				default : return false;
+				
+				default : {
+					System.err.println("[Parser] - Invalid order.");
+					return false;
+				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+			} catch (SocketException e) {
+				System.err.println("[Parser] - " + e.getMessage());
+				return false;
+			} catch (IOException e) {
+				System.err.println("[Parser] - Reading socket error");
+				return false;
+			}
 	}
 	
 	private boolean clientRegisterPlayer() throws IOException {
@@ -81,20 +92,38 @@ public class Parser {
 	}
 
 	private boolean clientInitGame() throws IOException {
+		int groupId = readInt();
 		int order = readInt();
 		System.out.println("[Parser] - Init Game (0) : order=" + order);
-		if (!GamesManager.MANAGER.createGame(this.session, order))
+		if (!GamesManager.MANAGER.createGame(this.session, groupId, order))
 			session.send(Orders.serverErrorInRequest(Orders.C_INIT_GAME.getId()));
 		return true;
+	}
+	
+	private boolean clientSubscribeGroup() throws IOException {
+		int groupId = readInt();
+		return GamesManager.MANAGER.registerClientToGroup(this.session, groupId);
+	}
+	
+	private boolean clientInitGroup() throws IOException {
+		int nb_player_per_game = readInt();
+		int nb_games = readInt();
+		return GamesManager.MANAGER.createGroup(session, nb_player_per_game, nb_games);
+	}
+	
+	private boolean clientFreeData() throws IOException {
+		int gameId = readInt();
+		int[] data = readIntArray(); 
+		return GamesManager.MANAGER.freeDataTransmitter(gameId, data);
 	}
 
 	
 	//Function ressource-----------------------------
-	private int readInt() throws IOException {
+	private int readInt() throws IOException, SocketException {
 		return in.readInt();
 	}
 	
-	private int[] readIntArray() throws IOException {
+	private int[] readIntArray() throws IOException, SocketException {
 		int len = readInt();
 		int[] res = new int[len];
 		for (int i = 0; i < len; i++) {
@@ -102,5 +131,6 @@ public class Parser {
 		}
 		return res;
 	}
+	
 	
 }

@@ -8,6 +8,10 @@ public enum Orders {
 	C_EMIT_STROKE(6),
 	C_ANSWER_VALIDATION(7),
 	C_REGISTER_PLAYER(8),
+	C_SUBSCRIBE_GROUP(12),
+	C_INIT_GROUP(14),
+	C_FREE_DATA(16),
+	
 	//ServerOrder (S2C)
 	
 	S_REQUEST_STROKE(1),
@@ -15,7 +19,12 @@ public enum Orders {
 	S_REQUEST_VALIDATION(3),
 	S_GAME_CREATED(4),
 	S_PLAYER_REGISTERED(9),
-	S_ERROR_REQUEST(10)
+	S_ERROR_REQUEST(10),
+	
+	S_END_GAME(11),
+	S_NEW_GROUPGAME(13),
+	S_GROUP_REGISTERED(15),
+	S_FREE_DATA(17)
 	;
 	
 	private final int id;
@@ -92,6 +101,45 @@ public enum Orders {
 		System.err.println("[Orders] - Error In Request (10) : command=" + cmd);
 		
 		int[] msg = {S_ERROR_REQUEST.getId(), cmd};
+		return msg;
+	}
+	
+	public static int[] serverEndGame(int gameId, int playerId) {
+		
+		System.out.println("[Orders] - End Game (11) : game_id=" + gameId + ", player_id=" + playerId);
+		
+		return new int[] {S_END_GAME.getId(), gameId, playerId};
+	}
+	
+	public static int[] serverNewGroupGame(int group_id, int gameId) {
+		
+		System.out.println("[Orders] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + gameId);
+		
+		return new int[] {S_NEW_GROUPGAME.getId(), group_id, gameId};
+	}
+	
+	public static int[] serverGroupRegistered(int groupId) {
+		
+		System.out.println("[Orders] - Group Registered (15) : group_id=" + groupId);
+		
+		return new int[] {S_GROUP_REGISTERED.getId(), groupId};
+	}
+	
+	public static int[] serverFreeData(int gameId, int[] data) {
+		
+		System.out.print("[Orders] - Free Data (17) : game_id=" + gameId + ", free_data=");
+		for (int i : data) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
+		
+		int[] msg = new int[3+data.length];
+		msg[0] = S_FREE_DATA.getId();
+		msg[1] = gameId;
+		msg[2] = data.length;
+		for (int i = 0; i < data.length; i++)
+			msg[2 + i] = data[i];
+		
 		return msg;
 	}
 
