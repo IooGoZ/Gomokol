@@ -66,7 +66,6 @@ public class Game implements Runnable {
 		this.order = order;
 		this.manager = manager;
 		this.thread = new Thread(this);
-		System.err.println(this.group);
 		if (group != null)
 			group.registerGame(this);
 	}
@@ -89,6 +88,7 @@ public class Game implements Runnable {
 						sessions.add(session);
 					this.current_player_id++;
 					players.add(new Player(this, this.current_player_id, session));
+					System.err.println(group.isReady() + " " + group.getNbPlayers() + " " + players.size());
 					if (group.isReady() && group.getNbPlayers() == players.size())
 						start(owner);
 				} else throw new Exception("Game->addPlayer : session is not registered to group.");
@@ -234,6 +234,7 @@ public class Game implements Runnable {
 				}
 			}
 		}
+		if (group!=null) group.restartIfPossible();
 		this.manager.destroyGame(this);
 	}
 	

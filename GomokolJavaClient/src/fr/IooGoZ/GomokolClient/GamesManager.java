@@ -274,7 +274,12 @@ public class GamesManager {
 	public boolean serverNewGroupGame(int group_id, int game_id) {
 		Group group = id2group.getOrDefault(group_id, null);
 		if (group != null) {
-			group.autoGameSubscriber(game_id);
+			
+			Thread t = new Thread(() -> {
+				group.autoGameSubscriber(game_id);
+			});
+			t.start();
+			
 			return true;
 		}
 		return false;

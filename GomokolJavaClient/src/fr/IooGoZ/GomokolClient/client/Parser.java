@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 
 import fr.IooGoZ.GomokolClient.DontUseOutsideAPI;
 import fr.IooGoZ.GomokolClient.GamesManager;
@@ -62,13 +63,16 @@ public class Parser {
 			default:
 				return false;
 			}
+		} catch (SocketException e) {
+			System.err.println("[Parser] - Reading socket error");
+			return false;
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+			System.err.println("[Parser] - " + e.getMessage());
+			return false;
+		} 
 	}
 
-	private boolean serverRequestStroke() throws IOException {
+	private boolean serverRequestStroke() throws IOException, SocketException {
 		int game_id = readInt();
 		int player_id = readInt();
 		
@@ -76,7 +80,7 @@ public class Parser {
 		return manager.serverRequestStroke(game_id, player_id);
 	}
 
-	private boolean serverSendStroke() throws IOException {
+	private boolean serverSendStroke() throws IOException, SocketException {
 		int game_id = readInt();
 		int player_id = readInt();
 		int[] stroke = readIntArray();
@@ -90,7 +94,7 @@ public class Parser {
 		return manager.serverSendStroke(game_id, player_id, stroke);
 	}
 
-	private boolean serverRequestValidation() throws IOException {
+	private boolean serverRequestValidation() throws IOException, SocketException {
 		int game_id = readInt();
 		int player_id = readInt();
 		int[] stroke = readIntArray();
@@ -103,7 +107,7 @@ public class Parser {
 		return manager.serverRequestValidation(game_id, player_id, stroke);
 	}
 
-	private boolean serverGameCreated() throws IOException {
+	private boolean serverGameCreated() throws IOException, SocketException {
 		int game_id = readInt();
 		
 		System.out.println("[Parser] - Game Created (4) : game_id=" + game_id);
@@ -111,7 +115,7 @@ public class Parser {
 		return true;
 	}
 
-	private boolean serverPlayerRegistered() throws IOException {
+	private boolean serverPlayerRegistered() throws IOException, SocketException {
 		int game_id = readInt();
 		int player_id = readInt();
 		
@@ -119,48 +123,60 @@ public class Parser {
 		return manager.serverPlayerRegistered(game_id, player_id);
 	}
 
-	private boolean serverErrorRequest() throws IOException {
+	private boolean serverErrorRequest() throws IOException, SocketException {
 		int order = readInt();
 
 		System.err.println("[Parser] - Server Error : command=" + order);
 		return false;
 	}
 	
-	private boolean serverEndGame() throws IOException {
+	private boolean serverEndGame() throws IOException, SocketException {
 		int game_id = readInt();
 		int player_id = readInt();
+		
+		System.out.println("[Parser] - End Game (11) : game_id=" + game_id + ", player_id=" + player_id);
 		
 		return manager.serverEndGame(game_id, player_id);
 	}
 	
-	private boolean serverNewGame() throws IOException {
+	private boolean serverNewGame() throws IOException, SocketException {
 		int group_id = readInt();
 		int game_id = readInt();
+		
+		System.out.println("[Parser] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + game_id);
 		
 		return manager.serverNewGroupGame(group_id, game_id);
 	}
 	
-	private boolean serverGroupRegistered() throws IOException {
+	private boolean serverGroupRegistered() throws IOException, SocketException {
 		int group_id = readInt();
+		
+		System.out.println("[Parser] - Group Registered (15) : group_id=" + group_id);
+		
 		manager.serverSetGroupId(group_id);
 		return true;
 	}
 	
-	private boolean serverFreeData() throws IOException {
+	private boolean serverFreeData() throws IOException, SocketException {
 		int game_id = readInt();
 		int[] data = readIntArray();
 		
+		System.out.print("[Parser] - Free Data (17) : game_id=" + game_id + ", data=");
+		for (int i : data) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
 		
 		return manager.serverFreeData(game_id, data);
 	}
 
 	// Fonction ressource-----------------------------------------------------
 
-	private int readInt() throws IOException {
+	private int readInt() throws IOException, SocketException {
 		return in.readInt();
 	}
 
-	private int[] readIntArray() throws IOException {
+	private int[] readIntArray() throws IOException, SocketException {
 		int len = readInt();
 		int[] res = new int[len];
 		for (int i = 0; i < len; i++) {

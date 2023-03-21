@@ -95,7 +95,7 @@ public class Parser {
 		int groupId = readInt();
 		int order = readInt();
 		System.out.println("[Parser] - Init Game (0) : order=" + order);
-		if (!GamesManager.MANAGER.createGame(this.session, groupId, order))
+		if (!GamesManager.MANAGER.createGame(this.session, groupId, order, true))
 			session.send(Orders.serverErrorInRequest(Orders.C_INIT_GAME.getId()));
 		return true;
 	}

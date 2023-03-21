@@ -75,13 +75,16 @@ public class Group {
 	}
 	
 	public void addWinner(Session sess) {
-		
 		scores.replace(sess, scores.get(sess)+1);
-		if (countGame < nbGames)
-			GamesManager.MANAGER.createGame(owner, id, order);
 		
 	}
 	
-	
+	public void restartIfPossible() {
+		if (countGame < nbGames) {
+			GamesManager.MANAGER.createGame(owner, id, order, false);
+			this.isReady = true;
+		} else this.isReady = false;
+			
+	}
 	
 }

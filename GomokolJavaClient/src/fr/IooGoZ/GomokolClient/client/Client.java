@@ -54,6 +54,7 @@ public class Client extends Socket implements Runnable {
 	@DontUseOutsideAPI
 	@Override
 	public void run() {
+		
 		while (super.isConnected())
 			if (!this.parser.parse())
 				break;

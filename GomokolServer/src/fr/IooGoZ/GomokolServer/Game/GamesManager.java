@@ -31,17 +31,18 @@ public class GamesManager {
 	//Fonction du parser------------------------------------------------------------------
 	
 	//Création d'une partie
-	public boolean createGame(Session session, int group, int order) {
+	public boolean createGame(Session session, int group, int order, boolean withAnswer) {
 		if (order > 0 && order < 10 && id2game.size() < 20 && group >= -1) {
 			
 			Game game = new Game(this, id2group.getOrDefault(group, null), this.current_game_id, order, session);
 			id2game.put(current_game_id, game);
 			
-			try {
-				session.send(Orders.serverGameCreated(this.current_game_id));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			if (withAnswer)
+				try {
+					session.send(Orders.serverGameCreated(this.current_game_id));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			
 			this.current_game_id++;
 			

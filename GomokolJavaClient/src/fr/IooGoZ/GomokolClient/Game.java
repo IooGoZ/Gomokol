@@ -97,7 +97,7 @@ public class Game {
 			Thread.yield();
 		}
 
-		player.setId(id);
+		player.setId(this.player_id);
 		players.put(this.player_id, player);
 
 		player_id = Client.DEFAULT_VALUE;
