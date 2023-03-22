@@ -1,50 +1,48 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "gamemanager.h"
 #include "game.h"
 
 #define BOARD_SIZE 15
+#define ORDER 2
 #define EMPTY -1
 
-
-int** board;
-
-
 // Fonctions de lien avec l'API
-int* get_position_black() {
+int* get_random_position() {
     int *position = (int*) malloc(2 * sizeof(int));
-    position[0] = 2;
-    position[1] = 3;
+    position[0] = (rand() % (BOARD_SIZE));
+    position[1] = (rand() % (BOARD_SIZE)); 
     return position;
 }
 
 void add_stroke_to_board(int player, int* stroke) {
-    board[stroke[0]][stroke[1]] = player;
+    
+}
+
+void group(int game_id) {
+    t_game game = register_new_game(game_id, ORDER);
+
+    register_new_board(game, add_stroke_to_board);
+    
+    register_new_player(game, get_random_position);
+    register_new_player(game, get_random_position);
 }
 
 int main() {
-    int i, j;
-
-    // Initialiser le plateau
-    board = (int**) malloc(BOARD_SIZE * sizeof(int*));
-    for (i = 0; i < BOARD_SIZE; i++) {
-        board[i] = (int*) malloc(BOARD_SIZE * sizeof(int));
-        for (j = 0; j < BOARD_SIZE; j++) {
-            board[i][j] = EMPTY;
-        }
-    }
+    srand(time(NULL));
 
     char address[] = "192.168.160.1";
 
     gamemanager_connect(address, 8080);
-    t_game game = register_new_game(0, 2);
 
-    register_new_board(game, add_stroke_to_board);
-    
-    register_new_player(game, get_position_black);
-    register_new_player(game, get_position_black);
+    printf("Enter group id: ");
+    int group_id = -1;
+    scanf("%d", &group_id);
+
+    subscribe_group(group_id, group, ORDER);
 
 
     wait_end_of_server();

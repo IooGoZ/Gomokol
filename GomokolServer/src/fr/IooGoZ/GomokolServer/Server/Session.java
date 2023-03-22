@@ -60,6 +60,10 @@ public class Session implements Runnable {
 		return server;
 	}
 	
+	public boolean isConnected() {
+		return !client.isClosed() && client.isConnected() && !server.isClosed();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Session) {

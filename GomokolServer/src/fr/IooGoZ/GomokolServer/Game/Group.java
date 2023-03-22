@@ -40,17 +40,21 @@ public class Group {
 		this.order = game.getOrder();
 		
 		
-		for (Session session : sessions)
+		
 			try {
-				
-				if (!(countGame == 0 && session == owner)) {
-					session.send(Orders.serverNewGroupGame(id, game.getId()));
-				}
+				if (countGame != 0) owner.send(Orders.serverNewGroupGame(id, game.getId()));
+				for (Session session : sessions)
+					if (!(session == owner)) {
+						session.send(Orders.serverNewGroupGame(id, game.getId()));
+					}
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 			}
 		
+		if (countGame == 0)
+			this.isReady = true;
 		countGame++;
+		
 	}
 	
 	public boolean isValidSession(Session sess) {

@@ -11,6 +11,8 @@ void gamemanager_connect(const char addr[], int port);
 
 t_server get_server();
 
+void subscribe_group(int group_id, void (*group) (int), int order);
+
 t_game register_new_game(int game_id, int order);
 
 bool server_player_register(int game_id, int player_id);

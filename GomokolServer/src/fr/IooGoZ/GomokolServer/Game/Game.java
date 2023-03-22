@@ -2,7 +2,6 @@ package fr.IooGoZ.GomokolServer.Game;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -226,11 +225,16 @@ public class Game implements Runnable {
 					this.waiting_player = null;
 					this.validation = -1;
 					
+					for (int i = 0; i < this.last_stroke.length; i++)
+						this.last_stroke[i] = Math.abs(this.last_stroke[i]);
+					
 					//On envoie le résultat de la partie
 					this.sendToAll(Orders.serverSendStroke(this.id, player.getId(), this.last_stroke));
 				
 					//Vérification de la fin de partie
 					if (!is_running) break;
+					
+					this.is_running = this.is_running && player.getSession().isConnected();
 					
 				} catch (IOException e) {
 					System.err.println(e.getMessage());

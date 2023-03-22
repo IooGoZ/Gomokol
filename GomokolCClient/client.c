@@ -110,7 +110,6 @@ void close_server(t_server serv) {
 }
 
 void send_server(t_server serv, unsigned int msg) {
-	printf("Message envoye : %d\n", msg);
 	unsigned int buffer = htonl(msg);
 	if (serv->is_connected) {
 		ssize_t bytes_sent = send(serv->socketfd, &buffer, sizeof(buffer), 0);
@@ -132,7 +131,7 @@ void send_server(t_server serv, unsigned int msg) {
 
 void send_server_message(t_server serv, int* msg) {
 	int len = msg[0];
-	for (int i = 1; i <= len; i++) {
+	for (int i = 1; i < len; i++) {
 		send_server(serv, (unsigned int) msg[i]);
 	}
 	free(msg);
