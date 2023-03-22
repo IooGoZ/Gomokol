@@ -1,6 +1,7 @@
 package fr.IooGoZ.GomokolClient.client;
 
 import fr.IooGoZ.GomokolClient.DontUseOutsideAPI;
+import fr.IooGoZ.GomokolClient.GamesManager;
 
 /**
  * @author IooGoZ - Tom BOIREAU
@@ -52,7 +53,8 @@ public enum Orders {
 	 */
 	@DontUseOutsideAPI
 	public static int[] clientInitGame(int group, int order) {
-		System.out.println("[Orders] - Init Game (0) : group=" + group + " order=" + order);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Init Game (0) : group=" + group + " order=" + order);
 		return new int[] { C_INIT_GAME.getId(), group, order };
 	}
 
@@ -63,7 +65,8 @@ public enum Orders {
 	 */
 	@DontUseOutsideAPI
 	public static int[] clientStartGame(int gameId) {
-		System.out.println("[Orders] - Start Game (5) : game_id=" + gameId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Start Game (5) : game_id=" + gameId);
 		return new int[] { C_START_GAME.getId(), gameId };
 	}
 
@@ -76,12 +79,13 @@ public enum Orders {
 	 */
 	@DontUseOutsideAPI
 	public static int[] clientEmitStroke(int gameId, int playerId, int[] stroke) {
-		
-		System.out.print("[Orders] - Emit Stroke (6) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Orders] - Emit Stroke (6) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		int[] msg = new int[4 + stroke.length];
 		msg[0] = C_EMIT_STROKE.getId();
@@ -101,7 +105,8 @@ public enum Orders {
 	 */
 	@DontUseOutsideAPI
 	public static int[] clientAnswerValidation(int gameId, int validation) {
-		System.out.println("[Orders] - Answer Validation (7) : game_id=" + gameId + ", validation=" + validation);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Answer Validation (7) : game_id=" + gameId + ", validation=" + validation);
 		return new int[] { C_ANSWER_VALIDATION.getId(), gameId, validation };
 	}
 
@@ -112,30 +117,35 @@ public enum Orders {
 	 */
 	@DontUseOutsideAPI
 	public static int[] clientRegisterPlayer(int gameId) {
-		System.out.println("[Orders] - Register Player (8) : game_id=" + gameId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Register Player (8) : game_id=" + gameId);
 		return new int[] { C_REGISTER_PLAYER.getId(), gameId };
 	}
 	
 	@DontUseOutsideAPI
 	public static int[] clientSubscribeGroup(int gameId) {
-		System.out.println("[Orders] - Subscribe Group (12) : game_id=" + gameId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Subscribe Group (12) : game_id=" + gameId);
 		return new int[] { C_SUBSCRIBE_GROUP.getId(), gameId };
 	}
 	
 	@DontUseOutsideAPI
 	public static int[] clientInitGroup(int nb_player_per_game, int nb_game) {
-		System.out.println("[Orders] - Init Group () : nb_player_per_game=" + nb_player_per_game + ", nb_game=" + nb_game);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Init Group () : nb_player_per_game=" + nb_player_per_game + ", nb_game=" + nb_game);
 		return new int[] { C_INIT_GROUP.getId(), nb_player_per_game, nb_game};
 	}
 	
 	
 	@DontUseOutsideAPI
 	public static int[] clientFreeData(int game_id, int[] data) {
-		System.out.print("[Orders] - Free Data () : game_id=" + game_id + ", data=");
-		for (int i : data) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Orders] - Free Data () : game_id=" + game_id + ", data=");
+			for (int i : data) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		int[] msg = new int[3 + data.length];
 		msg[0] = C_FREE_DATA.getId();

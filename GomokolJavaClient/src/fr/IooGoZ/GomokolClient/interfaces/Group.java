@@ -1,7 +1,17 @@
 package fr.IooGoZ.GomokolClient.interfaces;
 
-public interface Group {
+public abstract class Group {
 
-	public void autoGameSubscriber(int game_id);
+	private final int order; 
+	
+	public Group(int order) {
+		this.order = order;
+	}
+	
+	public int getOrder() {
+		return order;
+	}
+	
+	public abstract void autoGameSubscriber(int game_id);
 	
 }

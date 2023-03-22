@@ -76,7 +76,8 @@ public class Parser {
 		int game_id = readInt();
 		int player_id = readInt();
 		
-		System.out.println("[Parser] - Request Stroke (1) : game_id=" + game_id + ", player_id=" + player_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Request Stroke (1) : game_id=" + game_id + ", player_id=" + player_id);
 		return manager.serverRequestStroke(game_id, player_id);
 	}
 
@@ -85,11 +86,13 @@ public class Parser {
 		int player_id = readInt();
 		int[] stroke = readIntArray();
 
-		System.out.print("[Parser] - Send Stroke (2) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Parser] - Send Stroke (2) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		return manager.serverSendStroke(game_id, player_id, stroke);
 	}
@@ -99,18 +102,23 @@ public class Parser {
 		int player_id = readInt();
 		int[] stroke = readIntArray();
 		
-		System.out.print("[Parser] - Request Validation (3) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Parser] - Request Validation (3) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
+		
 		return manager.serverRequestValidation(game_id, player_id, stroke);
 	}
 
 	private boolean serverGameCreated() throws IOException, SocketException {
 		int game_id = readInt();
 		
-		System.out.println("[Parser] - Game Created (4) : game_id=" + game_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Game Created (4) : game_id=" + game_id);
+		
 		manager.serverSetGameId(game_id);
 		return true;
 	}
@@ -119,13 +127,13 @@ public class Parser {
 		int game_id = readInt();
 		int player_id = readInt();
 		
-		System.out.println("[Parser] - Player Registered (9) : game_id=" + game_id + ", player_id=" + player_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Player Registered (9) : game_id=" + game_id + ", player_id=" + player_id);
 		return manager.serverPlayerRegistered(game_id, player_id);
 	}
 
 	private boolean serverErrorRequest() throws IOException, SocketException {
 		int order = readInt();
-
 		System.err.println("[Parser] - Server Error : command=" + order);
 		return false;
 	}
@@ -134,7 +142,8 @@ public class Parser {
 		int game_id = readInt();
 		int player_id = readInt();
 		
-		System.out.println("[Parser] - End Game (11) : game_id=" + game_id + ", player_id=" + player_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - End Game (11) : game_id=" + game_id + ", player_id=" + player_id);
 		
 		return manager.serverEndGame(game_id, player_id);
 	}
@@ -143,7 +152,8 @@ public class Parser {
 		int group_id = readInt();
 		int game_id = readInt();
 		
-		System.out.println("[Parser] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + game_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + game_id);
 		
 		return manager.serverNewGroupGame(group_id, game_id);
 	}
@@ -151,7 +161,8 @@ public class Parser {
 	private boolean serverGroupRegistered() throws IOException, SocketException {
 		int group_id = readInt();
 		
-		System.out.println("[Parser] - Group Registered (15) : group_id=" + group_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Group Registered (15) : group_id=" + group_id);
 		
 		manager.serverSetGroupId(group_id);
 		return true;
@@ -161,11 +172,13 @@ public class Parser {
 		int game_id = readInt();
 		int[] data = readIntArray();
 		
-		System.out.print("[Parser] - Free Data (17) : game_id=" + game_id + ", data=");
-		for (int i : data) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Parser] - Free Data (17) : game_id=" + game_id + ", data=");
+			for (int i : data) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		return manager.serverFreeData(game_id, data);
 	}

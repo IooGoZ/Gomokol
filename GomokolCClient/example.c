@@ -14,20 +14,9 @@ int** board;
 
 // Fonctions de lien avec l'API
 int* get_position_black() {
-    int x, y;
-    best_move(BLACK, &x, &y);
-    int* position = (int*) malloc(2 * sizeof(int));
-    position[0] = x;
-    position[1] = y;
-    return position;
-}
-
-int* get_position_white() {
-    int x, y;
-    best_move(WHITE, &x, &y);
-    int* position = (int*) malloc(2 * sizeof(int));
-    position[0] = x;
-    position[1] = y;
+    int *position = (int*) malloc(2 * sizeof(int));
+    position[0] = 2;
+    position[1] = 3;
     return position;
 }
 
@@ -55,7 +44,7 @@ int main() {
     register_new_board(game, add_stroke_to_board);
     
     register_new_player(game, get_position_black);
-    register_new_player(game, get_position_white);
+    register_new_player(game, get_position_black);
 
 
     wait_end_of_server();

@@ -13,6 +13,8 @@ public class GamesManager {
 	//Seule instance du manager
 	public static final GamesManager MANAGER = new GamesManager();
 	
+	public static final boolean DEBUG = false;
+	
 	//Map game_id -> game
 	private final HashMap<Integer, Game> id2game;
 	

@@ -1,5 +1,7 @@
 package fr.IooGoZ.GomokolServer.Server;
 
+import fr.IooGoZ.GomokolServer.Game.GamesManager;
+
 //Générateur des messsages
 public enum Orders {
 	//ClientOrders (C2S)
@@ -40,18 +42,21 @@ public enum Orders {
 	//----------------------------------------------------------------------------------------------
 	
 	public static int[] serverRequestStroke(int gameId, int playerId) {
-		System.out.println("[Orders] - Request Stroke (1) : game_id=" + gameId + ", player_id=" + playerId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Request Stroke (1) : game_id=" + gameId + ", player_id=" + playerId);
 		int[] msg = {S_REQUEST_STROKE.getId(), gameId, playerId};
 		return msg;
 	}
 	
 	public static int[] serverSendStroke(int gameId, int playerId, int[] stroke) {
 		
-		System.out.print("[Orders] - Send Stroke (2) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Orders] - Send Stroke (2) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		int[] msg = new int[4+stroke.length];
 		msg[0] = S_SEND_STROKE.getId();
@@ -65,11 +70,13 @@ public enum Orders {
 
 	public static int[] serverRequestValidation(int gameId, int playerId, int[] stroke) {
 		
-		System.out.print("[Orders] - Request Validation (3) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Orders] - Request Validation (3) : game_id=" + gameId + ", player_id=" + playerId + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		int[] msg = new int[4+stroke.length];
 		msg[0] = S_REQUEST_VALIDATION.getId();
@@ -82,7 +89,8 @@ public enum Orders {
 	}
 	
 	public static int[] serverGameCreated(int gameId) {
-		System.out.println("[Orders] - Game Created (4) : game_id=" + gameId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Game Created (4) : game_id=" + gameId);
 		
 		int[] msg = {S_GAME_CREATED.getId(), gameId};
 		return msg;
@@ -90,7 +98,8 @@ public enum Orders {
 	
 	public static int[] serverPlayerRegistered(int gameId, int playerId) {
 		
-		System.out.println("[Orders] - Player Registered (9) : game_id=" + gameId + ", player_id=" + playerId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Player Registered (9) : game_id=" + gameId + ", player_id=" + playerId);
 		
 		int[] msg = {S_PLAYER_REGISTERED.getId(), gameId, playerId};
 		return msg;
@@ -106,32 +115,37 @@ public enum Orders {
 	
 	public static int[] serverEndGame(int gameId, int playerId) {
 		
-		System.out.println("[Orders] - End Game (11) : game_id=" + gameId + ", player_id=" + playerId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - End Game (11) : game_id=" + gameId + ", player_id=" + playerId);
 		
 		return new int[] {S_END_GAME.getId(), gameId, playerId};
 	}
 	
 	public static int[] serverNewGroupGame(int group_id, int gameId) {
 		
-		System.out.println("[Orders] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + gameId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - New Group's Game (13) : group_id=" + group_id + ", game_id=" + gameId);
 		
 		return new int[] {S_NEW_GROUPGAME.getId(), group_id, gameId};
 	}
 	
 	public static int[] serverGroupRegistered(int groupId) {
 		
-		System.out.println("[Orders] - Group Registered (15) : group_id=" + groupId);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Orders] - Group Registered (15) : group_id=" + groupId);
 		
 		return new int[] {S_GROUP_REGISTERED.getId(), groupId};
 	}
 	
 	public static int[] serverFreeData(int gameId, int[] data) {
 		
-		System.out.print("[Orders] - Free Data (17) : game_id=" + gameId + ", free_data=");
-		for (int i : data) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Orders] - Free Data (17) : game_id=" + gameId + ", free_data=");
+			for (int i : data) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		
 		int[] msg = new int[3+data.length];
 		msg[0] = S_FREE_DATA.getId();

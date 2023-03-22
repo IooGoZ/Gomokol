@@ -11,12 +11,14 @@
 #define TIMEOUT 3000
 #define DEFAULT_VALUE -1
 
+
 t_game create_game(int id, int order) {
     t_game game = malloc(sizeof(struct s_game));
     game->id = id;
     game->order = order;
     game->player_count = 0;
     game->board_count = 0;
+    game->free_data_receiver_count = 0;
     game->player_id = DEFAULT_VALUE;
     return game;
 }
@@ -32,6 +34,11 @@ int get_game_order(t_game game) {
 void register_new_board(t_game game, void (*fun) (int, int*)) {
     game->board[game->board_count] = fun;
     game->board_count++;
+}
+
+void register_new_free_data_receiver(t_game game, void (*fun) (int*)) {
+    game->free_data_receiver[game->free_data_receiver_count] = fun;
+    game->free_data_receiver_count++;
 }
 
 // Pas de get_player_at_position
@@ -81,6 +88,21 @@ void server_request_player_stroke(t_game game, int player_id) {
 void server_send_game_stroke(t_game game, int player_id, int* position) {
     for (int i = 0; i < game->board_count; i++)
         game->board[i](player_id, position);
+}
+
+void server_send_end_game(t_game game, int player_id) {
+    if (player_id == -1) {
+        printf("La partie %d s'est terminée sans gagnant.", game->id);
+    } else {
+        printf("La partie %d est terminée : le joueur %d a gagné.", game->id, player_id);
+    }
+}
+
+void server_send_free_data(t_game game, int* data) {
+    for (int i = 0; i < game->free_data_receiver_count; i++)
+        game->free_data_receiver[i](data);
+
+    free(data);
 }
 
 

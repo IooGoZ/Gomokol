@@ -3,27 +3,10 @@
 
 #include "orders.h"
 
-#define C_INIT_GAME 0
-#define C_START_GAME 5
 #define C_EMIT_STROKE 6
-#define C_ANSWER_VALIDATION 7
 #define C_REGISTER_PLAYER 8
-
-int* client_init_game(int order) {
-    int* msg = malloc(3 * sizeof(int));
-    msg[0] = 2;
-    msg[1] = C_INIT_GAME;
-    msg[2] = order;
-    return msg;
-}
-
-int* client_start_game(int game_id) {
-    int* msg = malloc(3 * sizeof(int));
-    msg[0] = 2;
-    msg[1] = C_START_GAME;
-    msg[2] = game_id;
-    return msg;
-}
+#define C_SUBSCRIBE_GROUP 12
+#define C_FREE_DATA 16
 
 int* client_emit_stroke(int game_id, int player_id, int order, int* stroke) {
     int* msg = malloc((size_t) (4 + order) * sizeof(int));
@@ -37,15 +20,6 @@ int* client_emit_stroke(int game_id, int player_id, int order, int* stroke) {
     return msg;
 }
 
-int* client_answer_validation(int game_id, int validation) {
-    int* msg = malloc(4 * sizeof(int));
-    msg[0] = 3;
-    msg[1] = C_ANSWER_VALIDATION;
-    msg[2] = game_id;
-    msg[3] = validation;
-    return msg;
-}
-
 int* client_register_player(int game_id) {
     int* msg = malloc(3 * sizeof(int));
     msg[0] = 2;
@@ -54,3 +28,20 @@ int* client_register_player(int game_id) {
     return msg;
 }
 
+int* client_subscribe_group(int group_id) {
+    int* msg = malloc(3 * sizeof(int));
+    msg[0] = 2;
+    msg[1] = C_SUBSCRIBE_GROUP;
+    msg[2] = group_id;
+    return msg;
+}
+
+int* client_free_data(int length, int* data) {
+    int* msg = malloc((size_t) (2 + length) * sizeof(int));
+    msg[0] = 1;
+    msg[1] = C_FREE_DATA;
+    for (int i = 0; i < length; i++) {
+        msg[2 + i] = data[i];
+    }
+    return msg;
+}

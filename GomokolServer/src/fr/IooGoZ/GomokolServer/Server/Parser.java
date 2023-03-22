@@ -49,7 +49,8 @@ public class Parser {
 	
 	private boolean clientRegisterPlayer() throws IOException {
 		int game_id = readInt();
-		System.out.println("[Parser] - Register Player (8) : game_id=" + game_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Register Player (8) : game_id=" + game_id);
 		if (!GamesManager.MANAGER.addPlayer(session, game_id))
 			session.send(Orders.serverErrorInRequest(Orders.C_REGISTER_PLAYER.getId()));
 		
@@ -59,7 +60,8 @@ public class Parser {
 	private boolean clientAnswerValidation() throws IOException {
 		int game_id = readInt();
 		int validation = readInt();
-		System.out.println("[Parser] - Answer Validation (7) : game_id=" + game_id + ", validation=" + validation);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Answer Validation (7) : game_id=" + game_id + ", validation=" + validation);
 		if (!GamesManager.MANAGER.ownerValidation(session, game_id, validation))
 			session.send(Orders.serverErrorInRequest(Orders.C_ANSWER_VALIDATION.getId()));
 		
@@ -70,11 +72,13 @@ public class Parser {
 		int game_id = readInt();
 		int player_id = readInt();
 		int[] stroke = readIntArray();
-		System.out.print("[Parser] - Emit Stroke (6) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
-		for (int i : stroke) {
-			System.out.print(i + " ");
+		if (GamesManager.DEBUG) {
+			System.out.print("[Parser] - Emit Stroke (6) : game_id=" + game_id + ", player_id=" + player_id + ", stroke=");
+			for (int i : stroke) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		if (!GamesManager.MANAGER.playStroke(session, game_id, player_id, stroke))
 			session.send(Orders.serverErrorInRequest(Orders.C_EMIT_STROKE.getId()));
 		
@@ -84,7 +88,8 @@ public class Parser {
 	private boolean clientStartGame() throws IOException {
 		int game_id = readInt();
 		
-		System.out.println("[Parser] - Start Game (5) : game_id=" + game_id);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Start Game (5) : game_id=" + game_id);
 		if (!GamesManager.MANAGER.startGame(session, game_id))
 			session.send(Orders.serverErrorInRequest(Orders.C_START_GAME.getId()));
 		
@@ -94,7 +99,8 @@ public class Parser {
 	private boolean clientInitGame() throws IOException {
 		int groupId = readInt();
 		int order = readInt();
-		System.out.println("[Parser] - Init Game (0) : order=" + order);
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Init Game (0) : order=" + order);
 		if (!GamesManager.MANAGER.createGame(this.session, groupId, order, true))
 			session.send(Orders.serverErrorInRequest(Orders.C_INIT_GAME.getId()));
 		return true;
@@ -102,18 +108,29 @@ public class Parser {
 	
 	private boolean clientSubscribeGroup() throws IOException {
 		int groupId = readInt();
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Subscribe Group (12) : group_id=" + groupId);
 		return GamesManager.MANAGER.registerClientToGroup(this.session, groupId);
 	}
 	
 	private boolean clientInitGroup() throws IOException {
 		int nb_player_per_game = readInt();
 		int nb_games = readInt();
+		if (GamesManager.DEBUG) 
+			System.out.println("[Parser] - Init Group (14) : nb_player_per_game=" + nb_player_per_game + ", nb_games=" + nb_games);
 		return GamesManager.MANAGER.createGroup(session, nb_player_per_game, nb_games);
 	}
 	
 	private boolean clientFreeData() throws IOException {
 		int gameId = readInt();
 		int[] data = readIntArray(); 
+		if (GamesManager.DEBUG) {
+			System.out.print("[Parser] - Emit Stroke (6) : game_id=" + gameId + ", data=");
+			for (int i : data) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
+		}
 		return GamesManager.MANAGER.freeDataTransmitter(gameId, data);
 	}
 

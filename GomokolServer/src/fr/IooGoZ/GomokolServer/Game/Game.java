@@ -2,8 +2,11 @@ package fr.IooGoZ.GomokolServer.Game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import fr.IooGoZ.GomokolServer.Server.Orders;
 import fr.IooGoZ.GomokolServer.Server.Session;
@@ -88,7 +91,6 @@ public class Game implements Runnable {
 						sessions.add(session);
 					this.current_player_id++;
 					players.add(new Player(this, this.current_player_id, session));
-					System.err.println(group.isReady() + " " + group.getNbPlayers() + " " + players.size());
 					if (group.isReady() && group.getNbPlayers() == players.size())
 						start(owner);
 				} else throw new Exception("Game->addPlayer : session is not registered to group.");
@@ -130,6 +132,8 @@ public class Game implements Runnable {
 	//Lancement de la partie
 	public synchronized boolean start(Session session) {
 		if (this.owner.equals(session) && !this.is_running && this.players.size() >= MINIMUM_PLAYER) {
+			Collections.shuffle(players, new Random(System.currentTimeMillis()));
+			
 			this.is_running = true;
 			this.thread.start();
 			return true;

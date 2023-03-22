@@ -87,10 +87,11 @@ public class Game {
 	 * 
 	 */
 	public synchronized void registerNewPlayer(Player player) throws Exception {
-		this.manager.getClient("registerNewPlayer").send(Orders.clientRegisterPlayer(id));
-
 		player_id = Client.DEFAULT_VALUE;
 		long time = System.currentTimeMillis();
+		
+		this.manager.getClient("registerNewPlayer").send(Orders.clientRegisterPlayer(id));
+		
 		while (this.player_id == Client.DEFAULT_VALUE) {
 			if (System.currentTimeMillis() - time > Client.TIMEOUT_DURATION)
 				throw new Exception("initNewGame : Timeout server");
@@ -121,12 +122,22 @@ public class Game {
 	 */
 	@DontUseOutsideAPI
 	public void serverRequestPlayerStroke(int player_id) throws IOException, Exception {
+		Thread.yield();
 		Player player = players.getOrDefault(player_id, null);
 		if (player != null) {
 			int[] stroke = player.getStroke();
 			this.manager.getClient("serverRequestPlayerStroke").send(Orders.clientEmitStroke(id, player_id, stroke));
 			return;
 		}
+		Thread.sleep(100);
+		Thread.yield();
+		player = players.getOrDefault(player_id, null);
+		if (player != null) {
+			int[] stroke = player.getStroke();
+			this.manager.getClient("serverRequestPlayerStroke").send(Orders.clientEmitStroke(id, player_id, stroke));
+			return;
+		}
+		
 		throw new Exception("serverRequestPlayerStroke : server request bad player.");
 	}
 
@@ -151,9 +162,9 @@ public class Game {
 	@DontUseOutsideAPI
 	public void serverEndGame(int player_id) {
 		if (player_id == -1) {
-			System.out.println("La partie " + id + " s'est terminé sans gagnant.");
+			System.out.println("La partie " + id + " s'est terminée sans gagnant.");
 		} else {
-			System.out.println("Le joueur " + player_id + " a gagné.");
+			System.out.println("La partie " + id + "est terminée : le joueur " + player_id + " a gagné.");
 		}
 	}
 
