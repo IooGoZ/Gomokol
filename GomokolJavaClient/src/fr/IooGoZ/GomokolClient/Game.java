@@ -61,12 +61,17 @@ public class Game {
 	}
 	
 	/**
+	 * Permet d'enregistrer un plateau de jeu
 	 * @param board Plateau de jeu à enregistrer
 	 */
 	public void registerNewBoard(Board board) {
 		boards.add(board);
 	}
 	
+	/**
+	 * Permet d'enregistrer une instance de données libres.
+	 * @param fdr Instance d'une interface de FreeDataReceiver
+	 */
 	public void registerFreeDataReceiver(FreeDataReceiver fdr) {
 		freeDatas.add(fdr);
 	}
@@ -159,9 +164,15 @@ public class Game {
 		return;
 	}
 	
+	/**
+	 * @param player_id
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public void serverEndGame(int player_id) {
-		if (player_id == -1) {
+		if (player_id == -2) {
+			System.out.println("La partie " + id + " est nulle.");
+		} else if (player_id == -1) {
 			System.out.println("La partie " + id + " s'est terminée sans gagnant.");
 		} else {
 			System.out.println("La partie " + id + "est terminée : le joueur " + player_id + " a gagné.");
@@ -169,6 +180,11 @@ public class Game {
 	}
 
 
+	/**
+	 * @param data
+	 * @return
+	 * Ne pas utiliser.
+	 */
 	public boolean serverFreeData(int[] data) {
 		for (FreeDataReceiver fdr : freeDatas)
 			fdr.receiveFreeData(data);

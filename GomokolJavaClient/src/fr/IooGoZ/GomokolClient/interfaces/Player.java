@@ -9,7 +9,16 @@ package fr.IooGoZ.GomokolClient.interfaces;
  */
 public interface Player {
 
+	/**
+	 * Permet de modifier l'id du joueur.
+	 * @param id Id à définir
+	 */
 	public void setId(int id);
+	
+	/**
+	 * Récupère l'id du joueur
+	 * @return id du joueur
+	 */
 	public int getId();
 	/**
 	 * @return Le coup joué par le joueur.

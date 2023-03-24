@@ -22,7 +22,10 @@ public class GamesManager {
 	 */
 	public static final GamesManager MANAGER = new GamesManager();
 	
-	public static final boolean DEBUG = true;
+	/**
+	 * Si activer, affiche les informations de debug.
+	 */
+	public static final boolean DEBUG = false;
 
 	private Client client;
 
@@ -76,6 +79,15 @@ public class GamesManager {
 	}
 	
 
+	/**
+	 * Initialise un groupe de jeu distant et local
+	 * @param group Instance du groupe local
+	 * @param nb_player_per_game Nombre de joueur attendu pour chaque partie
+	 * @param nb_games Nombre de partie à jouer
+	 * @return L'id du groupe distant
+	 * @throws IOException Erreur d'envoi des informations
+	 * @throws Exception Erreur de récupération du client
+	 */
 	public int initGroup(Group group, int nb_player_per_game, int nb_games) throws IOException, Exception {
 		current_group_id = Client.DEFAULT_VALUE;
 		long time = System.currentTimeMillis();
@@ -96,12 +108,24 @@ public class GamesManager {
 		return tmp_id;
 	}
 	
+	/**
+	 * Permet de se connecter à un groupe distant
+	 * @param group_id Id du group distant
+	 * @param group Instance du groupe local
+	 * @throws IOException Erreur d'envoi des informations
+	 * @throws Exception Erreur de récupération du client
+	 */
 	public void subscribeGroup(int group_id, Group group) throws IOException, Exception {
 		this.getClient("subscribeGroup").send(Orders.clientSubscribeGroup(group_id));
 		
 		id2group.put(group_id, group);
 	}
 	
+	/**
+	 * Lie un GameOwner a une partie. Utile pour l'utilisation des groups
+	 * @param owner Instance du GameOwner à liée
+	 * @param game Instance de la partie à liée
+	 */
 	public void linkOwnerWithGame(GameOwner owner, Game game) {
 		id2owner.put(game.getId(), owner);
 	}
@@ -263,11 +287,21 @@ public class GamesManager {
 		this.game_id = game_id;
 	}
 	
+	/**
+	 * @param group_id
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public void serverSetGroupId(int group_id) {
 		this.current_group_id = group_id;
 	}
 	
+	/**
+	 * @param game_id
+	 * @param player_id
+	 * @return
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public boolean serverEndGame(int game_id, int player_id) {
 		Game game = id2game.getOrDefault(game_id, null);
@@ -281,6 +315,12 @@ public class GamesManager {
 		return false;
 	}
 	
+	/**
+	 * @param group_id
+	 * @param game_id
+	 * @return
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public boolean serverNewGroupGame(int group_id, int game_id) {
 		Group group = id2group.getOrDefault(group_id, null);
@@ -296,6 +336,12 @@ public class GamesManager {
 		return false;
 	}
 	
+	/**
+	 * @param game_id
+	 * @param data
+	 * @return
+	 * Ne pas utiliser.
+	 */
 	@DontUseOutsideAPI
 	public boolean serverFreeData(int game_id, int[] data) {
 		Game game = id2game.getOrDefault(game_id, null);

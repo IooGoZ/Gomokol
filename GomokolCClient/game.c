@@ -83,15 +83,21 @@ void server_request_player_stroke(t_game game, int player_id) {
     int* position = player->get_position();
 
     send_server_message(get_server(), client_emit_stroke(game->id, player_id, game->order, position));
+
+    free(position);
 }
 
 void server_send_game_stroke(t_game game, int player_id, int* position) {
     for (int i = 0; i < game->board_count; i++)
         game->board[i](player_id, position);
+
+    free(position);
 }
 
 void server_send_end_game(t_game game, int player_id) {
-    if (player_id == -1) {
+    if (player_id == -2) {
+        printf("La partie %d est nulle.", game->id);
+    } else if (player_id == -1) {
         printf("La partie %d s'est terminée sans gagnant.", game->id);
     } else {
         printf("La partie %d est terminée : le joueur %d a gagné.", game->id, player_id);

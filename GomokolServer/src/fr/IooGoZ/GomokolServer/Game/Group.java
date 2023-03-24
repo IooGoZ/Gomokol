@@ -14,6 +14,7 @@ public class Group {
 	private final List<Session> sessions;
 	private final List<Game> games;
 	private final HashMap<Session, Integer> scores;
+	private int score_draw = 0;
 	private final int id;
 	private final int nbPlayers;
 	private final int nbGames;
@@ -79,7 +80,9 @@ public class Group {
 	}
 	
 	public void addWinner(Session sess) {
-		scores.replace(sess, scores.get(sess)+1);
+		if (sess == null) {
+			this.score_draw++;
+		} else scores.replace(sess, scores.get(sess)+1);
 		
 	}
 	
@@ -87,7 +90,20 @@ public class Group {
 		if (countGame < nbGames) {
 			GamesManager.MANAGER.createGame(owner, id, order, false);
 			this.isReady = true;
-		} else this.isReady = false;
+		} else {
+			printScores();
+			this.isReady = false;
+		}
+			
+	}
+	
+	private void printScores() {
+		System.out.println("=============Score du groupe : " + this.id + "=============");
+		System.out.println("Nombre de parties : " + this.countGame);
+		System.out.println("Nombre de nulles : " + this.score_draw);
+		for (Session sess : sessions) {
+			System.out.println("Score de la sesion " + sess.getServer().getInetAddress() + " : " + this.scores.getOrDefault(sess, null));
+		}
 			
 	}
 	

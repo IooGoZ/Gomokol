@@ -5,7 +5,7 @@ package fr.IooGoZ.GomokolClient.interfaces;
  * Représente la validation faite par un propriétaire de partie.
  */
 public enum Validation {
-	CAVOK(0), ENDGAME(1), CHEATING(2);
+	CAVOK(0), ENDGAME(1), CHEATING(2), DRAW(3);
 
 	private final int value;
 

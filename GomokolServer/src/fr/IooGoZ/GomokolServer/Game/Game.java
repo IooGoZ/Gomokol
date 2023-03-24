@@ -204,7 +204,7 @@ public class Game implements Runnable {
 					
 						//Fin de partie
 						case 1 : 
-							System.out.println("Player " + this.id + " " + player.getId() + " : won the game !" );
+							System.out.println("Player  " + player.getId() + " from the game " + this.id + " : won the game !" );
 							
 							this.sendToAll(Orders.serverEndGame(id, player.getId()));
 							
@@ -220,6 +220,16 @@ public class Game implements Runnable {
 							
 							this.manager.destroyGame(this);
 							return;
+							
+						case 3 :
+							System.out.println("The game " + this.id + " is draw.");
+							
+							this.sendToAll(Orders.serverEndGame(id, -2));
+							
+							if (group!=null) group.addWinner(null);
+							
+							this.is_running = false; break;
+
 					}
 					
 					this.waiting_player = null;
