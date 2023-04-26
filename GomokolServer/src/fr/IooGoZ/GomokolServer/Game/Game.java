@@ -120,7 +120,7 @@ public class Game implements Runnable {
 	
 	//Validation par l'owner d'un coup
 	public boolean ownerValidation(Session session, int validation) {
-		if (this.owner.equals(session) && this.validation == -1 && validation >= 0 && validation < 3) {
+		if (this.owner.equals(session) && this.validation == -1 && validation >= 0 && validation <= 3) {
 			this.validation = validation;
 			return true;
 		}
