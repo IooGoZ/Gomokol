@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Server extends ServerSocket {
 
-	private static final int PORT = 8080;
+	private static final int PORT = 12472;
 	private boolean isRunning = true;
 	private List<Session> wsSessions = new ArrayList<>();
 	
@@ -17,7 +17,11 @@ public class Server extends ServerSocket {
 	
 	
 	public Server() throws IOException {
-		super(PORT);
+		this(PORT);
+	}
+	
+	public Server(int port) throws IOException {
+		super(port);
 		System.out.println("Démarrage du serveur sur 127.0.0.1:" + PORT);
 		this.wsServer = this;
 	}

@@ -72,4 +72,10 @@ public class Session implements Runnable {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		String ip = this.client.getInetAddress().getHostAddress();
+		return ip;
+	}
 }

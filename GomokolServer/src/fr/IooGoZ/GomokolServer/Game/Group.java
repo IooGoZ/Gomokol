@@ -79,11 +79,10 @@ public class Group {
 		return isReady;
 	}
 	
-	public void addWinner(Session sess) {
+	public void addWinner(int game_id, Session sess) {
 		if (sess == null) {
 			this.score_draw++;
 		} else scores.replace(sess, scores.get(sess)+1);
-		
 	}
 	
 	public void restartIfPossible() {
@@ -102,7 +101,7 @@ public class Group {
 		System.out.println("Nombre de parties : " + this.countGame);
 		System.out.println("Nombre de nulles : " + this.score_draw);
 		for (Session sess : sessions) {
-			System.out.println("Score de la sesion " + sess.getServer().getInetAddress() + " : " + this.scores.getOrDefault(sess, null));
+			System.out.println("Score de la sesion " + sess.toString() + " : " + this.scores.getOrDefault(sess, null));
 		}
 			
 	}

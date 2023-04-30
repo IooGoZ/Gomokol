@@ -59,7 +59,6 @@ public class Game implements Runnable {
 	
 	private final Group group;
 	
-	
 	//Appelé par le Manager, ne pas faire d'appel en dehors de la partie
 	public Game(GamesManager manager, Group group, int id, int order, Session owner) {
 		this.owner = owner;
@@ -131,7 +130,7 @@ public class Game implements Runnable {
 	//Lancement de la partie
 	public synchronized boolean start(Session session) {
 		if (this.owner.equals(session) && !this.is_running && this.players.size() >= MINIMUM_PLAYER) {
-			Collections.shuffle(players, new Random(System.currentTimeMillis()));
+			//Collections.shuffle(players, new Random());
 			
 			this.is_running = true;
 			this.thread.start();
@@ -206,9 +205,11 @@ public class Game implements Runnable {
 						case 1 : 
 							System.out.println("Player  " + player.getId() + " from the game " + this.id + " : won the game !" );
 							
+							if (group!=null) group.addWinner(id, player.getSession());
+							
 							this.sendToAll(Orders.serverEndGame(id, player.getId()));
 							
-							if (group!=null) group.addWinner(player.getSession());
+							
 							
 							this.is_running = false; break;
 
@@ -224,9 +225,11 @@ public class Game implements Runnable {
 						case 3 :
 							System.out.println("The game " + this.id + " is draw.");
 							
+							if (group!=null) group.addWinner(id, null);
+							
 							this.sendToAll(Orders.serverEndGame(id, -2));
 							
-							if (group!=null) group.addWinner(null);
+							
 							
 							this.is_running = false; break;
 
@@ -277,6 +280,5 @@ public class Game implements Runnable {
 	public int getOrder() {
 		return order;
 	}
-
 	
 }
